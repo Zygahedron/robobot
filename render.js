@@ -29,24 +29,90 @@ fs.readdir(palette_dir, (err, files)=>{
 });
 
 async function render(map) {
+    let palette = "default";
+    if (map[0][0].startsWith("palette=")) {
+        palette = map[0].shift().substr("palette=".length);
+        if (!palettes[palette]) palette = "default";
+    }
     let width = map.reduce((a,b)=>Math.max(a,b.length),0);
     let height = map.length;
     let canvas = new Canvas(32 * width, 32 * height);
     let ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
-            let tile = data.tiles_list[data.tiles_by_name[map[y][x]]-1];
+            if (!map[y][x]) continue;
+            let args = map[y][x].split(":");
+            let name = args.shift();
+            let mods = {dir: 0};
+            args.forEach(arg=>{
+                switch (arg) {
+                    case "right":
+                    case "r":
+                        mods.dir = 0;
+                        break;
+                    case "downright":
+                    case "dr":
+                        mods.dir = Math.PI/4;
+                        break;
+                    case "down":
+                    case "d":
+                        mods.dir = Math.PI/2;
+                        break;
+                    case "downleft":
+                    case "dl":
+                        mods.dir = Math.PI*3/4;
+                        break;
+                    case "left":
+                    case "l":
+                        mods.dir = Math.PI;
+                        break;
+                    case "upleft":
+                    case "ul":
+                        mods.dir = Math.PI*5/4;
+                        break;
+                    case "up":
+                    case "u":
+                        mods.dir = Math.PI*3/2;
+                        break;
+                    case "upright":
+                    case "ur":
+                        mods.dir = Math.PI*7/4;
+                        break;
+                    case "tranz":
+                        mods.overlay = "trans"; // why is this different
+                        break;
+                    case "gay":
+                    case "enby":
+                        mods.overlay = arg;
+                        break;
+                }
+            });
+            let tile = data.tiles_list[data.tiles_by_name[name]-1];
+            if (!tile) continue;
             let sprite = await loadImage(sprites_dir+tile.sprite+".png");
-            tctx.globalCompositeOperation = "source-over";
-            tctx.fillStyle = palettes.default[tile.color[0]][tile.color[1]];
-            tctx.fillRect(0, 0, 32, 32);
-            tctx.globalCompositeOperation = "multiply";
+            tcanvas.width = sprite.width;
+            tcanvas.height = sprite.height;
+            
+            tctx.globalCompositeOperation = "source-over"; // color
+            if (mods.overlay) {
+                tctx.drawImage(await loadImage(sprites_dir+"overlay/"+mods.overlay+".png"), 0, 0)
+            } else {
+                tctx.fillStyle = palettes[palette][tile.color[0]][tile.color[1]];
+                tctx.fillRect(0, 0, sprite.width, sprite.height);
+            }
+            
+            tctx.globalCompositeOperation = "multiply"; // brightness
             tctx.drawImage(sprite, 0, 0);
-            tctx.globalCompositeOperation = "destination-in";
+            tctx.globalCompositeOperation = "destination-in"; // transparency
             tctx.drawImage(sprite, 0, 0);
             // other stuff etc
             
-            ctx.drawImage(tcanvas, x*32, y*32);
+            ctx.translate(x*32+sprite.width/2, y*32+sprite.height/2);
+            ctx.rotate(mods.dir);
+            ctx.drawImage(tcanvas, -sprite.width/2, -sprite.height/2);
+            ctx.rotate(-mods.dir);
+            ctx.translate(-x*32-sprite.width/2, -y*32-sprite.height/2);
         }
     }
     
