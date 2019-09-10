@@ -20,6 +20,12 @@ bot.on("message", message=>{
             message.reply("", {file: new Discord.Attachment(img, "render.png")})
         });
     }
+    if (message.content.startsWith("-rul ")) {
+        let map = message.content.substr(5).split("\n").map(row=>row.split(" "));
+        render(map, true).then(img=>{
+            message.reply("", {file: new Discord.Attachment(img, "render.png")})
+        });
+    }
 });
 
 process.on('SIGINT', () => {

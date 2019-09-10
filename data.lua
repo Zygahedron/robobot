@@ -7,4 +7,4 @@ function love.filesystem.getInfo() return end
 
 json = require "robobot/lib/json"
 require "bab-be-u/values"
-print(json.encode({tiles_list = tiles_list, tiles_by_name = tiles_by_name}))
+print(json.encode({tiles_list = tiles_list, tiles_by_name = tiles_by_name, colors = main_palette_for_colour}))
