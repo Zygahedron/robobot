@@ -1,6 +1,8 @@
 const {Canvas, loadImage} = require("canvas");
 const fs = require('fs');
 const sprites_dir = "../bab-be-u/assets/sprites/";
+let wat_sprite;
+loadImage(sprites_dir+"wat.png").then(s => wat_sprite = s);
 
 let tcanvas = new Canvas(32, 32);
 let tctx = tcanvas.getContext('2d');
@@ -170,7 +172,7 @@ async function render(map, is_rul) {
                     if (mods.sleep && tile.slep) {
                         spritename += "_slep";
                     }
-                    let sprite = await loadImage(sprites_dir + spritename + ".png");
+                    let sprite = await loadImage(sprites_dir + spritename + ".png") || wat_sprite;
                     
                     let color;
                     if (colored[j]) color = mods.color || colors[j];

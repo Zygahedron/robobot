@@ -18,6 +18,8 @@ exec("lua robobot/data.lua", {cwd: ".."}, (e, stdout, stderr) => {
             }
         });
         data.tiles.luv = data.tiles["l..uv"];
+        data.tiles["\\:o"] = data.tiles[":o"];
+        data.tiles[":o\\"] = data.tiles[":o"];
     }
 });
 
