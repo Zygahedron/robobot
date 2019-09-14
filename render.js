@@ -149,13 +149,13 @@ async function render(map, is_rul) {
                     tile = data.tiles[name];
                 }
                 let sprites, colors, colored;
-                if (Array.isArray(unit.sprite)) {
-                    sprites = unit.sprite;
-                    colors = unit.color;
-                    colored = unit.colored;
+                if (Array.isArray(tile.sprite)) {
+                    sprites = tile.sprite;
+                    colors = tile.color;
+                    colored = tile.colored;
                 } else {
-                    sprites = [unit.sprite];
-                    colors = [unit.color];
+                    sprites = [tile.sprite];
+                    colors = [tile.color];
                     colored = [true];
                 }
                 for (let j = 0; j < sprites.length; j++) {
