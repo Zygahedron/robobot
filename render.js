@@ -139,11 +139,12 @@ async function render(map, is_rul) {
                     }
                 });
                 let tile = data.tiles[name];
-                while (!tile && name.startsWith("text_")) {
+                while (!tile && name.startsWith("text_") && name != "text_this") {
                     name = name.substr(5);
                     tile = data.tiles[name];
                     mods.meta = (mods.meta || 0) + 1;
                 }
+                if (name == "text_this") name = "this";
                 if (!tile) continue;
                 if (mods.nt && data.tiles[name+"n't"]) {
                     mods.nt = false;
