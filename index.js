@@ -3,7 +3,7 @@ require('dotenv').config();
 const Discord = require('discord.js');
 const bot = new Discord.Client();
 const fs = require('fs');
-const palette_dir = "../bab-be-u/assets/palettes/"
+const palette_dir = "../bab-be-u/assets/palettes/";
 
 const render = require("./render.js")
 
@@ -38,8 +38,12 @@ palatttes:
         )
     }
     if (message.content == "-palettes") {
-        fs.readdir(palette_dir, list=>{
-            message.reply("```\n"+list.map(f=>f.replace(".png","")).join("\n")+"\n```")
+        fs.readdir(palette_dir, (err, list)=>{
+            if (err) {
+                message.reply(err);
+            } else {
+                message.reply("```\n"+list.map(f=>f.replace(".png","")).join("\n")+"\n```");
+            }
         });
     }
     if (message.content.startsWith("-til ")) {
