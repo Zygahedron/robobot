@@ -172,7 +172,12 @@ async function render(map, is_rul) {
                     if (mods.sleep && tile.slep) {
                         spritename += "_slep";
                     }
-                    let sprite = await loadImage(sprites_dir + spritename + ".png") || wat_sprite;
+                    let sprite
+                    try {
+                        sprite = await loadImage(sprites_dir + spritename + ".png");
+                    } catch (e) {
+                        sprite = wat_sprite;
+                    }
                     
                     let color;
                     if (colored[j]) color = mods.color || colors[j];
@@ -215,7 +220,7 @@ async function render(map, is_rul) {
                     tcanvas.height = 32;
                     tctx.globalCompositeOperation = "source-over";
                     tctx.fillStyle = palettes[palette][2][2];
-                    tctx.fillRect(0, 0, sprite.width, sprite.height);
+                    tctx.fillRect(0, 0, 32, 32);
                     tctx.globalCompositeOperation = "multiply"; // brightness
                     tctx.drawImage(ntsprite, 0, 0);
                     tctx.globalCompositeOperation = "destination-in"; // transparency
@@ -231,7 +236,7 @@ async function render(map, is_rul) {
                     tcanvas.height = 32;
                     tctx.globalCompositeOperation = "source-over";
                     tctx.fillStyle = palettes[palette][4][1];
-                    tctx.fillRect(0, 0, sprite.width, sprite.height);
+                    tctx.fillRect(0, 0, 32, 32);
                     tctx.globalCompositeOperation = "multiply"; // brightness
                     tctx.drawImage(metasprite, 0, 0);
                     tctx.globalCompositeOperation = "destination-in"; // transparency
