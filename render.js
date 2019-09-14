@@ -153,6 +153,7 @@ async function render(map, is_rul) {
                 if (name == "gate") {
                     name = "lin";
                     mods.gate = true;
+                    tile = data.tiles[name];
                 }
                 if (name == "text_this") name = "this";
                 if (!tile) continue;
@@ -182,6 +183,7 @@ async function render(map, is_rul) {
                     }
                     if (tile.name == "lin" && mods.gate) {
                         spritename += "_gate";
+                        colors[j] = [2,2];
                     }
                     if ((tile.name == "lin" || tile.name == "lvl") && mods.hidden) {
                         spritename += "_hidden";
