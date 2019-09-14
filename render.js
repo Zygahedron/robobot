@@ -170,7 +170,7 @@ async function render(map, is_rul) {
                     if (mods.sleep && tile.slep) {
                         spritename += "_slep";
                     }
-                    let sprite = await loadImage(spritename);
+                    let sprite = await loadImage(sprites_dir + spritename + ".png");
                     
                     let color;
                     if (colored[j]) color = mods.color || colors[j];
