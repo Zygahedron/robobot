@@ -20,14 +20,14 @@ bot.on("message", message=>{
 bab be u
  til
 render tils (use text_bab for txt)
-    rul
+ rul
 render ruls (use tile_bab for bab)
-    ping
+ ping
 pong
-    help
+ help
 u kno wat this dos, u did it to seee this
 
-    args
+how 2 use args:
 :left, :gay, :slep, etc (and they stack)
 \`\`\``
         )
