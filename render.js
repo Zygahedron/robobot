@@ -127,7 +127,14 @@ async function render(map, is_rul) {
                 if (mods.overlay) {
                     tctx.drawImage(await loadImage(sprites_dir+"overlay/"+mods.overlay+".png"), 0, 0)
                 } else {
-                    tctx.fillStyle = palettes[palette][(mods.color || tile.color)[0]][(mods.color || tile.color)[1]];
+                    if ((mods.color || tile.color).length == 2) {
+                        tctx.fillStyle = palettes[palette][(mods.color || tile.color)[0]][(mods.color || tile.color)[1]];
+                    } else {
+                        tctx.fillStyle = "#"+(mods.color || tile.color).map(n=>{
+                            let str = "0"+n.toString(16);
+                            return str.substr(str.length-2, str.length);
+                        }).join('');
+                    }
                     tctx.fillRect(0, 0, sprite.width, sprite.height);
                 }
                 
