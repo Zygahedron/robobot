@@ -149,7 +149,7 @@ async function render(map, is_rul) {
                     tile = data.tiles[name];
                 }
                 let sprites, colors, colored;
-                if (isArray(unit.sprite)) {
+                if (Array.isArray(unit.sprite)) {
                     sprites = unit.sprite;
                     colors = unit.color;
                     colored = unit.colored;
