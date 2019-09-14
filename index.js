@@ -26,11 +26,20 @@ render ruls (use tile_bab for bab)
 pong
  help
 u kno wat this dos, u did it to seee this
+ palettes
+show pallets
 
 how 2 use args:
 :left, :gay, :slep, etc (and they stack)
+palatttes:
+-til palette=marshmallow keek
 \`\`\``
         )
+    }
+    if (message.content == "-palettes") {
+        fs.readdir(palette_dir, list=>{
+            message.reply("```\n"+list.map(f=>f.replace(".png","")).join("\n")+"\n```")
+        });
     }
     if (message.content.startsWith("-til ")) {
         let map = message.content.substr(5).split("\n").map(row=>row.split(" "));

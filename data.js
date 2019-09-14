@@ -11,17 +11,25 @@ exec("lua robobot/data.lua", {cwd: ".."}, (e, stdout, stderr) => {
         Object.assign(data, JSON.parse(stdout))
         data.tiles = {};
         data.tiles_list.forEach((tile, i) => {
-            data.tiles[tile.name.toLowerCase()] = tile;
+            let names = [tile.name.toLowerCase()];
             if (tile.name.match(" ")) {
-                data.tiles[tile.name.toLowerCase().replace(/ /g,"")] = tile;
-                data.tiles[tile.name.toLowerCase().replace(/ /g,"_")] = tile;
+                names.push(names[0].replace(/ /g,""));
+                names.push(names[0].replace(/ /g,"_"));
             }
-            if (tile.name.startsWith("letter_")) {
-                data.tiles[tile.name.toLowerCase().replace("letter_","text_")] = tile;
-            }
+            names.forEach(name=>{
+                data.tiles[name] = tile;
+                if (name.startsWith("letter_") && name != "letter_o" && name != "letter_u") {
+                    data.tiles[name.replace("letter_","text_")] = tile;
+                    data.tiles[name.replace("letter_","txt_")] = tile;
+                }
+                if (name.startsWith("text_")) {
+                    data.tiles[name.replace("text_","txt_")] = tile;
+                }
+            });
         });
         data.tiles["luv"] = data.tiles["l..uv"];
         data.tiles["text_luv"] = data.tiles["text_l..uv"];
+        data.tiles["text_txt"] = data.tiles["text_text"];
     }
 });
 
