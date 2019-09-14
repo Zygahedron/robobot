@@ -46,12 +46,17 @@ async function render(map, is_rul) {
             let stack = map[y][x].split("+");
             for (let i = 0; i < stack.length; i++) {
                 if (!stack[i]) continue;
-                let args = stack[i].split(":");
+                let args = stack[i].toLowerCase().split(":");
                 let name = args.shift();
+                if (name == "") name = ":" + args.shift();
                 if (is_rul) name = "text_" + name;
                 if (name.startsWith("text_tile_")) name = name.substr(10);
                 let mods = {dir: 0};
-                args.forEach(arg=>{
+                args.forEach((arg, i)=>{
+                    if (i == 0 && (arg == "(" || arg == ")" || arg == "o")) {
+                        name += ":" + arg;
+                        return;
+                    }
                     switch (arg) {
                         case "right":
                         case "r":
@@ -94,7 +99,31 @@ async function render(map, is_rul) {
                             break;
                         case "meta":
                             mods.meta = 1;
-                            break
+                            break;
+                        case "nt":
+                        case "n't":
+                            mods.nt = true;
+                            break;
+                        case "slep":
+                        case "sleep":
+                            mods.sleep = true;
+                            break;
+                        case "windows":
+                        case "windous":
+                            mods.os = "windous";
+                            break;
+                        case "mac":
+                        case "mak":
+                            mods.os = "mak";
+                            break;
+                        case "linux":
+                        case "linx":
+                            mods.os = "linx";
+                            break;
+                        case "android":
+                        case "androd":
+                            mods.os = "androd";
+                            break;
                         default:
                             if (arg in data.colors) {
                                 mods.color = data.colors[arg];
@@ -107,49 +136,90 @@ async function render(map, is_rul) {
                             }
                     }
                 });
-                let tile = data.tiles_list[data.tiles_by_name[name]-1];
+                let tile = data.tiles[name];
                 while (!tile && name.startsWith("text_")) {
                     name = name.substr(5);
-                    tile = data.tiles_list[data.tiles_by_name[name]-1];
+                    tile = data.tiles[name];
                     mods.meta = (mods.meta || 0) + 1;
                 }
                 if (!tile) continue;
-                let sprite
-                if (mods.meta && tile.metasprite) {
-                    sprite = await loadImage(sprites_dir+tile.metasprite+".png");
-                } else {
-                    sprite = await loadImage(sprites_dir+tile.sprite+".png");
+                if (mods.nt && data.tiles[name+"n't"]) {
+                    mods.nt = false;
+                    name += "n't";
+                    tile = data.tiles[name];
                 }
-                tcanvas.width = sprite.width;
-                tcanvas.height = sprite.height;
-                
-                tctx.globalCompositeOperation = "source-over"; // color
-                if (mods.overlay) {
-                    tctx.drawImage(await loadImage(sprites_dir+"overlay/"+mods.overlay+".png"), 0, 0)
+                let sprites, colors, colored;
+                if (isArray(unit.sprite)) {
+                    sprites = unit.sprite;
+                    colors = unit.color;
+                    colored = unit.colored;
                 } else {
-                    if ((mods.color || tile.color).length == 2) {
-                        tctx.fillStyle = palettes[palette][(mods.color || tile.color)[0]][(mods.color || tile.color)[1]];
+                    sprites = [unit.sprite];
+                    colors = [unit.color];
+                    colored = [true];
+                }
+                for (let j = 0; j < sprites.length; j++) {
+                    let spritename;
+                    if (mods.meta && tile.metasprite) {
+                        spritename = tile.metasprite // this won't work if there's multiple metasprites, but I don't think anything does that
+                    } else if (tile.name == "os" && mods.os) {
+                        spritename = "os_" + mods.os;
                     } else {
-                        tctx.fillStyle = "#"+(mods.color || tile.color).map(n=>{
-                            let str = "0"+n.toString(16);
-                            return str.substr(str.length-2, str.length);
-                        }).join('');
+                        spritename = sprites[j]
                     }
-                    tctx.fillRect(0, 0, sprite.width, sprite.height);
+                    if (mods.sleep && tile.slep) {
+                        spritename += "_slep";
+                    }
+                    
+                    let color;
+                    if (colored[j]) color = mods.color || colors[j];
+                    else color = colors[j];
+                    
+                    tcanvas.width = sprite.width;
+                    tcanvas.height = sprite.height;
+                    
+                    tctx.globalCompositeOperation = "source-over"; // color
+                    if (colored[j] && mods.overlay) {
+                        tctx.drawImage(await loadImage(sprites_dir+"overlay/"+mods.overlay+".png"), 0, 0)
+                    } else {
+                        if (color.length == 2) {
+                            tctx.fillStyle = palettes[palette][color[0]][color[1]];
+                        } else {
+                            tctx.fillStyle = "#"+color.map(n=>{
+                                let str = "0"+n.toString(16);
+                                return str.substr(str.length-2, str.length);
+                            }).join('');
+                        }
+                        tctx.fillRect(0, 0, sprite.width, sprite.height);
+                    }
+                    
+                    tctx.globalCompositeOperation = "multiply"; // brightness
+                    tctx.drawImage(sprite, 0, 0);
+                    tctx.globalCompositeOperation = "destination-in"; // transparency
+                    tctx.drawImage(sprite, 0, 0);
+                    // other stuff etc
+                    
+                    ctx.translate(x*32+16, y*32+16);
+                    ctx.rotate(mods.dir);
+                    ctx.drawImage(tcanvas, -sprite.width/2, -sprite.height/2);
+                    ctx.rotate(-mods.dir);
+                    ctx.translate(-x*32-16, -y*32-16);
                 }
                 
-                tctx.globalCompositeOperation = "multiply"; // brightness
-                tctx.drawImage(sprite, 0, 0);
-                tctx.globalCompositeOperation = "destination-in"; // transparency
-                tctx.drawImage(sprite, 0, 0);
-                // other stuff etc
-                
-                ctx.translate(x*32+sprite.width/2, y*32+sprite.height/2);
-                ctx.rotate(mods.dir);
-                ctx.drawImage(tcanvas, -sprite.width/2, -sprite.height/2);
-                ctx.rotate(-mods.dir);
-                ctx.translate(-x*32-sprite.width/2, -y*32-sprite.height/2);
-                
+                if (mods.nt) {
+                    let ntsprite = await loadImage(sprites_dir+"n't.png")
+                    tcanvas.width = 32;
+                    tcanvas.height = 32;
+                    tctx.globalCompositeOperation = "source-over";
+                    tctx.fillStyle = palettes[palette][2][2];
+                    tctx.fillRect(0, 0, sprite.width, sprite.height);
+                    tctx.globalCompositeOperation = "multiply"; // brightness
+                    tctx.drawImage(ntsprite, 0, 0);
+                    tctx.globalCompositeOperation = "destination-in"; // transparency
+                    tctx.drawImage(ntsprite, 0, 0);
+                    
+                    ctx.drawImage(tcanvas, x*32, y*32);
+                }
                 if (mods.meta) {
                     let metasprite_name = "meta1.png";
                     if (mods.meta == 2) metasprite_name = "meta2.png";

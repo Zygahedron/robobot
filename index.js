@@ -14,16 +14,25 @@ bot.on("message", message=>{
     if (message.content == "-ping") {
         message.reply("pong");
     }
+    if (message.content == "-help") {
+        // TODO
+    }
     if (message.content.startsWith("-til ")) {
         let map = message.content.substr(5).split("\n").map(row=>row.split(" "));
         render(map).then(img=>{
             message.reply("", {file: new Discord.Attachment(img, "render.png")})
+        }, err=>{
+            console.error(err);
+            message.reply("An error occured while rendering:" + err);
         });
     }
     if (message.content.startsWith("-rul ")) {
         let map = message.content.substr(5).split("\n").map(row=>row.split(" "));
         render(map, true).then(img=>{
             message.reply("", {file: new Discord.Attachment(img, "render.png")})
+        }, err=>{
+            console.error(err);
+            message.reply("An error occured while rendering:" + err);
         });
     }
 });
