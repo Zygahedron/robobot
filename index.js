@@ -3,6 +3,7 @@ require('dotenv').config();
 const Discord = require('discord.js');
 const bot = new Discord.Client();
 const fs = require('fs');
+const palette_dir = "../bab-be-u/assets/palettes/"
 
 const render = require("./render.js")
 
