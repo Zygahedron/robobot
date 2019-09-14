@@ -15,7 +15,22 @@ bot.on("message", message=>{
         message.reply("pong");
     }
     if (message.content == "-help") {
-        // TODO
+        message.reply(
+`\`\`\`
+bab be u
+ til
+render tils (use text_bab for txt)
+    rul
+render ruls (use tile_bab for bab)
+    ping
+pong
+    help
+u kno wat this dos, u did it to seee this
+
+    args
+:left, :gay, :slep, etc (and they stack)
+\`\`\``
+        )
     }
     if (message.content.startsWith("-til ")) {
         let map = message.content.substr(5).split("\n").map(row=>row.split(" "));
