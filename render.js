@@ -126,6 +126,12 @@ async function render(map, is_rul) {
                         case "androd":
                             mods.os = "androd";
                             break;
+                        case "hidden":
+                            mods.hidden = true;
+                            break;
+                        case "gate":
+                            mods.gate = true;
+                            break;
                         default:
                             if (arg in data.colors) {
                                 mods.color = data.colors[arg];
@@ -143,6 +149,10 @@ async function render(map, is_rul) {
                     name = name.substr(5);
                     tile = data.tiles[name];
                     mods.meta = (mods.meta || 0) + 1;
+                }
+                if (name == "gate") {
+                    name = "lin";
+                    mods.gate = true;
                 }
                 if (name == "text_this") name = "this";
                 if (!tile) continue;
@@ -169,6 +179,12 @@ async function render(map, is_rul) {
                         spritename = "os_" + mods.os;
                     } else {
                         spritename = sprites[j]
+                    }
+                    if (tile.name == "lin" && mods.gate) {
+                        spritename += "_gate";
+                    }
+                    if ((tile.name == "lin" || tile.name == "lvl") && mods.hidden) {
+                        spritename += "_hidden";
                     }
                     if (mods.sleep && tile.slep) {
                         spritename += "_slep";

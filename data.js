@@ -16,10 +16,12 @@ exec("lua robobot/data.lua", {cwd: ".."}, (e, stdout, stderr) => {
                 data.tiles[tile.name.toLowerCase().replace(/ /g,"")] = tile;
                 data.tiles[tile.name.toLowerCase().replace(/ /g,"_")] = tile;
             }
+            if (tile.name.startsWith("letter_")) {
+                data.tiles[tile.name.toLowerCase().replace("letter_","text_")] = tile;
+            }
         });
-        data.tiles.luv = data.tiles["l..uv"];
-        data.tiles["\\:o"] = data.tiles[":o"];
-        data.tiles[":o\\"] = data.tiles[":o"];
+        data.tiles["luv"] = data.tiles["l..uv"];
+        data.tiles["text_luv"] = data.tiles["text_l..uv"];
     }
 });
 
