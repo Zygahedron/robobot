@@ -42,6 +42,11 @@ process.on('SIGINT', () => {
     bot.destroy();
     process.exit();
 });
+process.on('SIGTERM', () => {
+    console.log("Shutting down.");
+    bot.destroy();
+    process.exit();
+});
 process.on("uncaughtException", (err)=>{
     console.error(err);
     bot.destroy();
