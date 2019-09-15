@@ -224,7 +224,7 @@ async function drawTile(name, args, x, y) {
         let color;
         if (colored[j]) color = mods.color || colors[j];
         else color = colors[j];
-        if (mods.overlay) mods.overlay = await loadImage("overlay/"+mods.overlay);
+        if (mods.overlay) mods.overlay = await loadSprite("overlay/"+mods.overlay);
         
         setColor(color);
         drawSprite(sprite, x, y, mods.dir, colored[j], mods.overlay)
