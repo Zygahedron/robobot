@@ -51,7 +51,6 @@ function setColor(color) {
             return str.substr(str.length-2, str.length);
         }).join('');
     }
-    console.log(c);
     tctx.fillStyle = c;
 }
 
@@ -64,6 +63,7 @@ function drawSprite(sprite, x, y, dir = 0, colored = true, overlay) {
         if (overlay) {
             tctx.drawImage(overlay, 0, 0)
         } else {
+            console.log(tctx.fillStyle);
             tctx.fillRect(0, 0, sprite.width, sprite.height);
         }
         tctx.globalCompositeOperation = "multiply"; // brightness
