@@ -42,13 +42,19 @@ async function loadSprite(sprite) {
 }
 
 function setColor(color) {
+    let c
     if (color.length == 2) {
-        tctx.fillStyle = palettes[palette][color[0]][color[1]];
+        c = palettes[palette][color[0]][color[1]];
     } else {
-        tctx.fillStyle = "#"+color.map(n=>{
+        c = "#"+color.map(n=>{
             let str = "0"+n.toString(16);
             return str.substr(str.length-2, str.length);
         }).join('');
+    }
+    tctx.fillStyle = c;
+    if (tctx.fillStyle != c) {
+        console.log(c, tctx.fillStyle)
+        tctx.fillStyle = "#ffffff";
     }
 }
 
