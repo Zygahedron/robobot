@@ -6,6 +6,7 @@ loadImage(sprites_dir+"wat.png").then(s => wat_sprite = s);
 
 let tcanvas = new Canvas(32, 32);
 let tctx = tcanvas.getContext('2d');
+let ctx
 
 const data = require("./data.js");
 
@@ -252,7 +253,7 @@ async function render(map, is_rul) {
     let width = map.reduce((a,b)=>Math.max(a,b.length),0);
     let height = map.length;
     let canvas = new Canvas(32*width + 16, 32*height + 16);
-    let ctx = canvas.getContext('2d');
+    ctx = canvas.getContext('2d');
     ctx.translate(8, 8);
     ctx.imageSmoothingEnabled = false
     for (let y = 0; y < height; y++) {
