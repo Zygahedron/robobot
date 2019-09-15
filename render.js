@@ -74,7 +74,7 @@ function drawSprite(sprite, x, y, dir = 0, colored = true, overlay) {
     ctx.translate(-x*32-16, -y*32-16);
 }
 
-async function drawTile(name, args) {
+async function drawTile(name, args, x, y) {
     if (name == "" || name == "text_" || name == "txt_" || name == "letter_") name += ":" + args.shift();
     if (name.startsWith("text_tile_")) name = name.substr(10);
     if (name.startsWith("text_til_")) name = name.substr(9);
@@ -264,7 +264,7 @@ async function render(map, is_rul) {
                 let args = stack[i].toLowerCase().split(":");
                 let name = args.shift();
                 if (is_rul) name = "text_" + name;
-                await drawTile(name, args);
+                await drawTile(name, args, x, y);
             }
         }
     }
