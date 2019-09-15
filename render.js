@@ -1,6 +1,7 @@
 const {Canvas, loadImage} = require("canvas");
 const fs = require('fs');
 const sprites_dir = "../bab-be-u/assets/sprites/";
+const sprites_cache = [];
 let wat_sprite;
 loadImage(sprites_dir+"wat.png").then(s => wat_sprite = s);
 
@@ -34,7 +35,7 @@ let palette
 
 async function loadSprite(sprite) {
     try {
-        return await loadImage(sprite);
+        return sprites_cache[sprite] || (sprites_cache[sprite] = await loadImage(sprites_dir+sprite+".png"));
     } catch (e) {
         return wat_sprite;
     }
@@ -219,10 +220,11 @@ async function drawTile(name, args, x, y) {
             spritename += "_slep";
         }
         
-        let sprite = await loadSprite(sprites_dir + spritename + ".png");
+        let sprite = await loadSprite(spritename);
         let color;
         if (colored[j]) color = mods.color || colors[j];
         else color = colors[j];
+        if (mods.overlay) mods.overlay = await loadImage(mods.overlay);
         
         setColor(color);
         drawSprite(sprite, x, y, mods.dir, colored[j], mods.overlay)
@@ -230,11 +232,11 @@ async function drawTile(name, args, x, y) {
     
     if (mods.nt) {
         setColor([2,2]);
-        drawSprite(await loadSprite(sprites_dir+"n't.png"), x, y);
+        drawSprite(await loadSprite("n't"), x, y);
     }
     if (mods.meta) {
         setColor([4,1]);
-        drawSprite(await loadSprite(sprites_dir+`meta${mods.meta == 2 ? 2 : 1}.png`), x, y)
+        drawSprite(await loadSprite("meta" + mods.meta == 2 ? 2 : 1), x, y)
         
         if (mods.meta > 2) {
             ctx.fillStyle = tctx.fillStyle;
