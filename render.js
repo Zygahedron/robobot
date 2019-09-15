@@ -51,11 +51,8 @@ function setColor(color) {
             return str.substr(str.length-2, str.length);
         }).join('');
     }
+    console.log(c);
     tctx.fillStyle = c;
-    if (tctx.fillStyle != c) {
-        console.log(c, tctx.fillStyle)
-        tctx.fillStyle = "#ffffff";
-    }
 }
 
 function drawSprite(sprite, x, y, dir = 0, colored = true, overlay) {
