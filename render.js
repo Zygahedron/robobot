@@ -182,7 +182,7 @@ async function drawTile(name, args) {
         tile = data.tiles[name];
     }
     if (name == "text_this") name = "this";
-    if (!tile) continue;
+    if (!tile) return;
     if (mods.nt && data.tiles[name+"n't"]) {
         mods.nt = false;
         name += "n't";
