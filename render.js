@@ -266,7 +266,7 @@ async function render(map, is_rul) {
                     if (mods.meta > 2) {
                         ctx.fillStyle = palettes[palette][4][1];
                         ctx.font = "10px Arial";
-                        ctx.fillText(""+mods.meta, 28, 34);
+                        ctx.fillText(""+mods.meta, x*32 + 28, y*32 + 34);
                     }
                 }
             }
