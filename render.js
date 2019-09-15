@@ -29,6 +29,7 @@ fs.readdir(palette_dir, (err, files)=>{
         });
     });
 });
+let palette
 
 async function loadSprite(sprite) {
     try {
@@ -243,7 +244,7 @@ async function drawTile(name, args) {
 }
 
 async function render(map, is_rul) {
-    let palette = "default";
+    palette = "default";
     if (map[0][0].startsWith("palette=")) {
         palette = map[0].shift().substr("palette=".length);
         if (!palettes[palette]) palette = "default";
