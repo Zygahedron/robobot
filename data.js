@@ -30,6 +30,12 @@ exec("lua robobot/data.lua", {cwd: ".."}, (e, stdout, stderr) => {
         data.tiles["luv"] = data.tiles["l..uv"];
         data.tiles["text_luv"] = data.tiles["text_l..uv"];
         data.tiles["text_txt"] = data.tiles["text_text"];
+        data.tiles["text_:"] = data.tiles["letter_colon"];
+        data.tiles["letter_:"] = data.tiles["letter_colon"];
+        data.tiles["text_("] = data.tiles["letter_parenthesis"];
+        data.tiles["letter_("] = data.tiles["letter_parenthesis"];
+        data.tiles["text_)"] = data.tiles["letter_parenthesis"];
+        data.tiles["letter_)"] = data.tiles["letter_parenthesis"];
     }
 });
 
