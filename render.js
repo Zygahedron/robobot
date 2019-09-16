@@ -57,6 +57,7 @@ function drawSprite(sprite, x, y, dir = 0, colored = true, overlay, mask, maskdi
     tcanvas.width = sprite.width;
     tcanvas.height = sprite.height;
     tctx.fillStyle = color;
+    tctx.imageSmoothingEnabled = false
     
     tctx.translate(sprite.width/2, sprite.height/2);
     tctx.rotate(dir);
