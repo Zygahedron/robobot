@@ -228,7 +228,7 @@ async function drawTile(name, args, x, y) {
         
         console.log(tctx.fillStyle.length);
         setColor(color);
-        console.log(tctx.fillStyle.length);
+        console.assert(tctx.fillStyle == "#ffffff");
         drawSprite(sprite, x, y, mods.dir, colored[j], mods.overlay)
         console.log(tctx.fillStyle.length);
     }
