@@ -52,13 +52,16 @@ function setColor(color) {
     }
 }
 
-function drawSprite(sprite, x, y, dir = 0, colored = true, overlay) {
+function drawSprite(sprite, x, y, dir = 0, colored = true, overlay, mask, maskdir = 0) {
+    let color = tctx.fillStyle;
+    tcanvas.width = sprite.width;
+    tcanvas.height = sprite.height;
+    tctx.fillStyle = color;
+    
+    tctx.translate(sprite.width/2, sprite.height/2);
+    tctx.rotate(dir);
+    tctx.translate(-sprite.width/2, -sprite.height/2);
     if (colored) {
-        let color = tctx.fillStyle;
-        tcanvas.width = sprite.width;
-        tcanvas.height = sprite.height;
-        tctx.fillStyle = color;
-        
         tctx.globalCompositeOperation = "source-over"; // color
         if (overlay) {
             tctx.drawImage(overlay, 0, 0)
@@ -69,13 +72,20 @@ function drawSprite(sprite, x, y, dir = 0, colored = true, overlay) {
         tctx.drawImage(sprite, 0, 0);
         tctx.globalCompositeOperation = "destination-in"; // transparency
         tctx.drawImage(sprite, 0, 0);
+    } else {
+        tctx.globalCompositeOperation = "source-over"; // color
+        tctx.drawImage(sprite, 0, 0);
+    }
+    tctx.setTransform(0,0,0,0,0,0);
+    
+    if (mask) {
+        tctx.rotate(maskdir);
+        tctx.globalCompositeOperation = "destination-in"; // transparency
+        tctx.drawImage(mask, (sprite.width-mask.width)/2, (sprite.height-mask.height)/2);
+        tctx.rotate(-maskdir);
     }
     
-    ctx.translate(x*32+16, y*32+16);
-    ctx.rotate(dir);
-    ctx.drawImage(colored ? tcanvas : sprite, -sprite.width/2, -sprite.height/2);
-    ctx.rotate(-dir);
-    ctx.translate(-x*32-16, -y*32-16);
+    ctx.drawImage(colored ? tcanvas : sprite, x*32+16-sprite.width/2, y*32+16-sprite.height/2);
 }
 
 async function drawTile(name, args, x, y) {
