@@ -238,7 +238,7 @@ async function drawTile(name, args, x, y) {
     }
     if (mods.meta) {
         setColor([4,1]);
-        drawSprite(await loadSprite("meta" + mods.meta == 2 ? 2 : 1), x, y)
+        drawSprite(await loadSprite("meta" + (mods.meta == 2 ? 2 : 1)), x, y)
         
         if (mods.meta > 2) {
             ctx.fillStyle = tctx.fillStyle;
