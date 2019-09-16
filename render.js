@@ -54,8 +54,10 @@ function setColor(color) {
 
 function drawSprite(sprite, x, y, dir = 0, colored = true, overlay) {
     if (colored) {
+        let color = tctx.fillStyle;
         tcanvas.width = sprite.width;
         tcanvas.height = sprite.height;
+        tctx.fillStyle = color;
         
         tctx.globalCompositeOperation = "source-over"; // color
         if (overlay) {
