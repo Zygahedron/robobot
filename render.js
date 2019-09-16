@@ -228,11 +228,8 @@ async function drawTile(name, args, x, y) {
         else color = colors[j];
         if (mods.overlay) mods.overlay = await loadSprite("overlay/"+mods.overlay);
         
-        console.log(tctx.fillStyle.length);
         setColor(color);
-        console.assert(tctx.fillStyle == "#ffffff");
         drawSprite(sprite, x, y, mods.dir, colored[j], mods.overlay)
-        console.log(tctx.fillStyle.length);
     }
     
     if (mods.nt) {
