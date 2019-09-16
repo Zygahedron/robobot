@@ -42,16 +42,14 @@ async function loadSprite(sprite) {
 }
 
 function setColor(color) {
-    let c
     if (color.length == 2) {
-        c = palettes[palette][color[0]][color[1]];
+        tctx.fillStyle = palettes[palette][color[0]][color[1]];
     } else {
-        c = "#"+color.map(n=>{
+        tctx.fillStyle = "#"+color.map(n=>{
             let str = "0"+n.toString(16);
             return str.substr(str.length-2, str.length);
         }).join('');
     }
-    tctx.fillStyle = c;
 }
 
 function drawSprite(sprite, x, y, dir = 0, colored = true, overlay) {
@@ -63,7 +61,6 @@ function drawSprite(sprite, x, y, dir = 0, colored = true, overlay) {
         if (overlay) {
             tctx.drawImage(overlay, 0, 0)
         } else {
-            console.log(tctx.fillStyle);
             tctx.fillRect(0, 0, sprite.width, sprite.height);
         }
         tctx.globalCompositeOperation = "multiply"; // brightness
@@ -229,8 +226,11 @@ async function drawTile(name, args, x, y) {
         else color = colors[j];
         if (mods.overlay) mods.overlay = await loadSprite("overlay/"+mods.overlay);
         
+        console.log(tctx.fillStyle);
         setColor(color);
+        console.log(tctx.fillStyle);
         drawSprite(sprite, x, y, mods.dir, colored[j], mods.overlay)
+        console.log(tctx.fillStyle);
     }
     
     if (mods.nt) {
