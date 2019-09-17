@@ -226,7 +226,10 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
     if (poortoll) {
         ctx.globalCompositeOperation = "destination-out";
         let mask = await loadSprite(tile.sprite+"_bg")
-        ctx.drawImage(mask, x*32+16-mask.width/2, y*32+16-mask.height/2);
+        ctx.translate(x*32+16, y*32+16);
+        ctx.rotate(mods.dir);
+        ctx.drawImage(mask, -mask.width/2, -mask.height/2);
+        ctx.setTransform(0,0,0,0,0,0);
         ctx.globalCompositeOperation = "source-over";
         let stack = poortoll.split("+");
         for (let i = 0; i < stack.length; i++) {
