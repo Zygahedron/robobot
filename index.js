@@ -56,6 +56,8 @@ palatttes:
         let result = searcher.search(message.content.substr(8));
         if (result.length > 0) {
             message.reply("```\n" + result.join("\n") + "\n```");
+        } else {
+            message.reply("No matches.");
         }
     }
     if (message.content.startsWith("-til ")) {
