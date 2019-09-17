@@ -55,7 +55,12 @@ palatttes:
         if (!searcher) searcher = new FuzzySearch(data.tiles_list, ["name"], {sort: true});
         let result = searcher.search(message.content.substr(8));
         if (result.length > 0) {
-            message.reply("```\n" + result.map(tile=>tile.name).join("\n") + "\n```");
+            let m = "";
+            if (result.length > 32) {
+                result = result.slice(0, 32);
+                m = "Only the first 32 results are shown.\n";
+            }
+            message.reply(m+"```\n" + result.map(tile=>tile.name).join("\n") + "\n```");
         } else {
             message.reply("No matches.");
         }
