@@ -83,6 +83,19 @@ palatttes:
             message.reply("An error occured while rendering:" + err);
         });
     }
+    if (message.content == "--updatebab") {
+        delete require.cache[require.resolve('./dep')];
+        exec("git pull origin master", {cwd: "../bab-be-u"}, (e, stdout, stderr) => {
+            if (e) {
+                console.error(e);
+            } else if (stderr) {
+                console.error(stderr);
+            } else {
+                require("./data.js");
+                message.reply("Updated.");
+            }
+        });
+    }
 });
 
 process.on('SIGINT', () => {
