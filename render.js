@@ -90,7 +90,7 @@ function drawSprite(sprite, x, y, dir = 0, colored = true, overlay, mask, maskdi
     ctx.drawImage(tcanvas, x*32+16-tcanvas.width/2, y*32+16-tcanvas.height/2);
 }
 
-async function drawTile(name, args, x, y, mask, maskdir) {
+async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
     if (name == "" || name == "text_" || name == "txt_" || name == "letter_") name += ":" + args.shift();
     if (name.startsWith("text_tile_")) name = name.substr(10);
     if (name.startsWith("text_til_")) name = name.substr(9);
@@ -230,7 +230,7 @@ async function drawTile(name, args, x, y, mask, maskdir) {
             let args = stack[i].toLowerCase().split(":");
             let name = args.shift();
             if (is_rul) name = "text_" + name;
-            await drawTile(name, args, x, y, loadSprite(tile.sprite+"_bg"), mods.dir);
+            await drawTile(name, args, x, y, is_rul, loadSprite(tile.sprite+"_bg"), mods.dir);
         }
     }
     
