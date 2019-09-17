@@ -296,10 +296,10 @@ async function render(map, is_rul) {
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             if (!map[y][x]) continue;
-            let stack = map[y][x].split("+");
+            let stack = map[y][x].split(/\+(?!(?:[^)]|\:\))*\))/); // "+" not in parentheses
             for (let i = 0; i < stack.length; i++) {
                 if (!stack[i]) continue;
-                let args = stack[i].toLowerCase().split(":");
+                let args = stack[i].toLowerCase().split(/\:(?!(?:[^)]|\:\))*\))/); // ":" not in parentheses
                 let name = args.shift();
                 if (is_rul) name = "text_" + name;
                 await drawTile(name, args, x, y);
