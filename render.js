@@ -230,7 +230,7 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
         ctx.rotate(mods.dir);
         ctx.drawImage(mask, -mask.width/2, -mask.height/2);
         ctx.rotate(-mods.dir);
-        ctx.translate(-x*32+16, -y*32+16);
+        ctx.translate(-x*32-16, -y*32-16);
         ctx.globalCompositeOperation = "source-over";
         let stack = poortoll.split("+");
         for (let i = 0; i < stack.length; i++) {
