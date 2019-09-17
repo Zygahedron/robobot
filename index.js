@@ -72,7 +72,7 @@ palatttes:
             message.reply("", {file: new Discord.Attachment(img, "render.png")});
         }, err=>{
             console.error(err);
-            message.reply("An error occured while rendering:" + err);
+            message.reply("An error occured while rendering:\n" + err);
         });
     }
     if (message.content.startsWith("-rul ")) {
@@ -81,7 +81,7 @@ palatttes:
             message.reply("", {file: new Discord.Attachment(img, "render.png")});
         }, err=>{
             console.error(err);
-            message.reply("An error occured while rendering:" + err);
+            message.reply("An error occured while rendering:\n" + err);
         });
     }
     if (message.content == "--updatebab") {
