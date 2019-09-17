@@ -189,6 +189,7 @@ async function drawTile(name, args, x, y, mask, maskdir) {
     if (name.match(/^[^()]+\(.*\)$/)) { // foo(bar)
         let match = name.match(/^([^()]+)\((.*)\)$/);
         if (data.tiles[match[1]].portal) {
+            name = match[1];
             poortoll = match[2];
         }
     }
