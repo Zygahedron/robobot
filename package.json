@@ -9,9 +9,10 @@
   "author": "Notnat Tlikehis",
   "license": "ISC",
   "dependencies": {
-		"canvas": "^2.6.0",
-		"discord.js": "^11.5.1",
-		"dotenv": "^6.2.0",
-		"fs": "0.0.1-security"
-	}
+    "canvas": "^2.6.0",
+    "discord.js": "^11.5.1",
+    "dotenv": "^6.2.0",
+    "fs": "0.0.1-security",
+    "fuzzy-search": "^3.0.1"
+  }
 }

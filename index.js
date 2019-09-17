@@ -5,10 +5,15 @@ const bot = new Discord.Client();
 const fs = require('fs');
 const palette_dir = "../bab-be-u/assets/palettes/";
 
-const render = require("./render.js")
+const render = require("./render.js");
+const data = require("./data.js");
+
+const FuzzySearch = require("fuzzy-search");
+
+let searcher;
 
 bot.on("ready", ()=>{
-    console.log("Ready.")
+    console.log("Ready.");
 });
 
 bot.on("message", message=>{
@@ -35,7 +40,7 @@ how 2 use args:
 palatttes:
 -til palette=marshmallow keek
 \`\`\``
-        )
+        );
     }
     if (message.content == "-palettes") {
         fs.readdir(palette_dir, (err, list)=>{
@@ -46,10 +51,17 @@ palatttes:
             }
         });
     }
+    if (message.content.startsWith("-search ")) {
+        if (!searcher) searcher = new FuzzySearch(data.tiles, "name", {sort = true});
+        let result = searcher.search(message.content.substr(8));
+        if (result.length > 0) {
+            message.reply("```\n" + result.join("\n") + "\n```");
+        }
+    }
     if (message.content.startsWith("-til ")) {
         let map = message.content.substr(5).split("\n").map(row=>row.split(" "));
         render(map).then(img=>{
-            message.reply("", {file: new Discord.Attachment(img, "render.png")})
+            message.reply("", {file: new Discord.Attachment(img, "render.png")});
         }, err=>{
             console.error(err);
             message.reply("An error occured while rendering:" + err);
@@ -58,7 +70,7 @@ palatttes:
     if (message.content.startsWith("-rul ")) {
         let map = message.content.substr(5).split("\n").map(row=>row.split(" "));
         render(map, true).then(img=>{
-            message.reply("", {file: new Discord.Attachment(img, "render.png")})
+            message.reply("", {file: new Discord.Attachment(img, "render.png")});
         }, err=>{
             console.error(err);
             message.reply("An error occured while rendering:" + err);

@@ -54,12 +54,12 @@ function setColor(color) {
 
 function drawSprite(sprite, x, y, dir = 0, colored = true, overlay, mask, maskdir = 0) {
     let color = tctx.fillStyle;
-    tcanvas.width = sprite.width;
-    tcanvas.height = sprite.height;
+    tcanvas.width = sprite.width*2;
+    tcanvas.height = sprite.height*2;
     tctx.fillStyle = color;
     tctx.imageSmoothingEnabled = false
     
-    tctx.translate(sprite.width/2, sprite.height/2);
+    tctx.translate(sprite.width, sprite.height);
     tctx.rotate(dir);
     tctx.translate(-sprite.width/2, -sprite.height/2);
     if (colored) {
@@ -77,14 +77,15 @@ function drawSprite(sprite, x, y, dir = 0, colored = true, overlay, mask, maskdi
         tctx.globalCompositeOperation = "source-over"; // color
         tctx.drawImage(sprite, 0, 0);
     }
-    tctx.setTransform(0,0,0,0,0,0);
     
     if (mask) {
-        tctx.rotate(maskdir);
+        tctx.translate(sprite.width/2, sprite.height/2);
+        tctx.rotate(maskdir-dir);
+        tctx.translate(-mask.width/2, -mask.height/2);
         tctx.globalCompositeOperation = "destination-in"; // transparency
-        tctx.drawImage(mask, (sprite.width-mask.width)/2, (sprite.height-mask.height)/2);
-        tctx.rotate(-maskdir);
+        tctx.drawImage(mask, 0, 0);
     }
+    tctx.setTransform(0,0,0,0,0,0);
     
     ctx.drawImage(colored ? tcanvas : sprite, x*32+16-sprite.width/2, y*32+16-sprite.height/2);
 }
