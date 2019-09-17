@@ -83,7 +83,6 @@ function drawSprite(sprite, x, y, dir = 0, colored = true, overlay, mask, maskdi
         tctx.rotate(maskdir-dir);
         tctx.translate(-mask.width/2, -mask.height/2);
         tctx.globalCompositeOperation = "destination-in"; // transparency
-        console.log(mask);
         tctx.drawImage(mask, 0, 0);
     }
     tctx.setTransform(0,0,0,0,0,0);
@@ -228,6 +227,7 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
         ctx.globalCompositeOperation = "destination-out";
         let mask = await loadSprite(tile.sprite+"_bg")
         ctx.drawImage(mask, x*32+16-mask.width/2, y*32+16-mask.height/2);
+        ctx.globalCompositeOperation = "source-over";
         let stack = poortoll.split("+");
         for (let i = 0; i < stack.length; i++) {
             if (!stack[i]) continue;
