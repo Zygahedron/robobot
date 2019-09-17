@@ -1,6 +1,6 @@
 const {exec} = require('child_process');
 
-const data = {}
+const data = require("./data-base");
 
 exec("lua robobot/data.lua", {cwd: ".."}, (e, stdout, stderr) => {
     if (e) {

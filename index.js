@@ -11,6 +11,7 @@ const data = require("./data.js");
 const FuzzySearch = require("fuzzy-search");
 
 let searcher;
+const {exec} = require('child_process');
 
 bot.on("ready", ()=>{
     console.log("Ready.");
@@ -84,7 +85,7 @@ palatttes:
         });
     }
     if (message.content == "--updatebab") {
-        delete require.cache[require.resolve('./dep')];
+        delete require.cache[require.resolve('./data.js')];
         exec("git pull origin master", {cwd: "../bab-be-u"}, (e, stdout, stderr) => {
             if (e) {
                 console.error(e);
