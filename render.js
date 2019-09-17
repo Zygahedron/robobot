@@ -231,7 +231,7 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
             let args = stack[i].toLowerCase().split(":");
             let name = args.shift();
             if (is_rul) name = "text_" + name;
-            await drawTile(name, args, x, y, is_rul, loadSprite(tile.sprite+"_bg"), mods.dir);
+            await drawTile(name, args, x, y, is_rul, await loadSprite(tile.sprite+"_bg"), mods.dir);
         }
     }
     
