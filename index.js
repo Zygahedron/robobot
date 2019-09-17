@@ -56,9 +56,9 @@ palatttes:
         let result = searcher.search(message.content.substr(8));
         if (result.length > 0) {
             let m = "";
-            if (result.length > 32) {
-                result = result.slice(0, 32);
-                m = "Only the first 32 results are shown.\n";
+            if (result.length > 10) {
+                m = "Only the first 10 results are shown. (" + result.length + " total)\n";
+                result = result.slice(0, 10);
             }
             message.reply(m+"```\n" + result.map(tile=>tile.name).join("\n") + "\n```");
         } else {
