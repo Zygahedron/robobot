@@ -185,13 +185,11 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
                 }
         }
     });
-    let poortoll;
+    let poortoll = false;
     if (name.match(/^[^()]+\(.*\)$/)) { // foo(bar)
         let match = name.match(/^([^()]+)\((.*)\)$/);
-        if (data.tiles[match[1]].portal) {
-            name = match[1];
-            poortoll = match[2];
-        }
+        name = match[1];
+        poortoll = match[2];
     }
     if (name == ")") mods.dir = (mods.dir || 0) + Math.PI;
     let tile = data.tiles[name];
@@ -212,18 +210,8 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
         name += "n't";
         tile = data.tiles[name];
     }
-    let sprites, colors, colored;
-    if (Array.isArray(tile.sprite)) {
-        sprites = tile.sprite;
-        colors = tile.color;
-        colored = tile.colored;
-    } else {
-        sprites = [tile.sprite];
-        colors = [tile.color];
-        colored = [true];
-    }
     
-    if (poortoll) {
+    if (poortoll && tile.portal) {
         ctx.globalCompositeOperation = "destination-out";
         let mask = await loadSprite(tile.sprite+"_bg")
         ctx.translate(x*32+16, y*32+16);
@@ -240,6 +228,17 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
             if (is_rul) name = "text_" + name;
             await drawTile(name, args, x, y, is_rul, mask, mods.dir);
         }
+    }
+    
+    let sprites, colors, colored;
+    if (Array.isArray(tile.sprite)) {
+        sprites = tile.sprite;
+        colors = tile.color;
+        colored = tile.colored;
+    } else {
+        sprites = [tile.sprite];
+        colors = [tile.color];
+        colored = [true];
     }
     
     for (let j = 0; j < sprites.length; j++) {

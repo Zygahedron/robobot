@@ -18,7 +18,7 @@ exec("lua robobot/data.lua", {cwd: ".."}, (e, stdout, stderr) => {
             }
             names.forEach(name=>{
                 data.tiles[name] = tile;
-                if (name.startsWith("letter_") && name != "letter_o" && name != "letter_u") {
+                if (name.startsWith("letter_") && name != "letter_o" && name != "letter_u" && name != "letter_go") {
                     data.tiles[name.replace("letter_","text_")] = tile;
                     data.tiles[name.replace("letter_","txt_")] = tile;
                 }
@@ -36,6 +36,7 @@ exec("lua robobot/data.lua", {cwd: ".."}, (e, stdout, stderr) => {
         data.tiles["letter_("] = data.tiles["letter_parenthesis"];
         data.tiles["text_)"] = data.tiles["letter_parenthesis"];
         data.tiles["letter_)"] = data.tiles["letter_parenthesis"];
+        data.tiles["text_infloop"] = data.tiles["text_loop"];
     }
 });
 
