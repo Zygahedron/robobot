@@ -308,7 +308,7 @@ async function render(map, is_rul) {
                 let args = stack[i].toLowerCase().split(/\:(?!(?:[^()]|\:[()])*\))/); // ":" not in parentheses
                 let name = args.shift();
                 if (is_rul) name = "text_" + name;
-                await drawTile(name, args, x, y);
+                await drawTile(name, args, x, y, is_rul);
             }
         }
     }
