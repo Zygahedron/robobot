@@ -225,13 +225,16 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
     }
     
     if (poortoll) {
+        ctx.globalCompositeOperation = "destination-out";
+        let mask = await loadSprite(tile.sprite+"_bg")
+        ctx.drawImage(mask, x*32+16-mask.width/2, y*32+16-mask.height/2);
         let stack = poortoll.split("+");
         for (let i = 0; i < stack.length; i++) {
             if (!stack[i]) continue;
             let args = stack[i].toLowerCase().split(":");
             let name = args.shift();
             if (is_rul) name = "text_" + name;
-            await drawTile(name, args, x, y, is_rul, await loadSprite(tile.sprite+"_bg"), mods.dir);
+            await drawTile(name, args, x, y, is_rul, mask, mods.dir);
         }
     }
     
@@ -296,10 +299,10 @@ async function render(map, is_rul) {
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             if (!map[y][x]) continue;
-            let stack = map[y][x].split(/\+(?!(?:[^)]|\:\))*\))/); // "+" not in parentheses
+            let stack = map[y][x].split(/\+(?!(?:[^()]|\:[()])*\))/); // "+" not in parentheses
             for (let i = 0; i < stack.length; i++) {
                 if (!stack[i]) continue;
-                let args = stack[i].toLowerCase().split(/\:(?!(?:[^)]|\:\))*\))/); // ":" not in parentheses
+                let args = stack[i].toLowerCase().split(/\:(?!(?:[^()]|\:[()])*\))/); // ":" not in parentheses
                 let name = args.shift();
                 if (is_rul) name = "text_" + name;
                 await drawTile(name, args, x, y);
