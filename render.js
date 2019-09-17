@@ -54,12 +54,12 @@ function setColor(color) {
 
 function drawSprite(sprite, x, y, dir = 0, colored = true, overlay, mask, maskdir = 0) {
     let color = tctx.fillStyle;
-    tcanvas.width = sprite.width*2;
-    tcanvas.height = sprite.height*2;
+    tcanvas.width = sprite.width + sprite.height;
+    tcanvas.height = sprite.width + sprite.height;
     tctx.fillStyle = color;
     tctx.imageSmoothingEnabled = false
     
-    tctx.translate(sprite.width, sprite.height);
+    tctx.translate(tcanvas.width/2, tcanvas.height/2);
     tctx.rotate(dir);
     tctx.translate(-sprite.width/2, -sprite.height/2);
     if (colored) {
@@ -87,7 +87,7 @@ function drawSprite(sprite, x, y, dir = 0, colored = true, overlay, mask, maskdi
     }
     tctx.setTransform(0,0,0,0,0,0);
     
-    ctx.drawImage(colored ? tcanvas : sprite, x*32+16-sprite.width/2, y*32+16-sprite.height/2);
+    ctx.drawImage(tcanvas, x*32+16-tcanvas.width/2, y*32+16-tcanvas.height/2);
 }
 
 async function drawTile(name, args, x, y) {
