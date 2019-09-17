@@ -83,6 +83,7 @@ function drawSprite(sprite, x, y, dir = 0, colored = true, overlay, mask, maskdi
         tctx.rotate(maskdir-dir);
         tctx.translate(-mask.width/2, -mask.height/2);
         tctx.globalCompositeOperation = "destination-in"; // transparency
+        console.log(mask);
         tctx.drawImage(mask, 0, 0);
     }
     tctx.setTransform(0,0,0,0,0,0);
