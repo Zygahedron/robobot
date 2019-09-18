@@ -174,10 +174,20 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
                 mods.gate = true;
                 break;
             case "gunne":
+                mods.equip = mods.equip || [];
+                mods.equip.push(["gunnesmol", tiles.gunne.color]);
+                break;
             case "hatt":
+                mods.equip = mods.equip || [];
+                mods.equip.push(["hatsmol", tiles.hatt.color]);
+                break;
             case "katany":
                 mods.equip = mods.equip || [];
-                mods.equip.push(arg);
+                mods.equip.push(["katanysmol", tiles.katany.color]);
+                break;
+            case "knif":
+                mods.equip = mods.equip || [];
+                mods.equip.push(["knifsmol", tiles.knif.color]);
                 break;
             default:
                 if (arg in data.colors) {
@@ -279,8 +289,8 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
     
     if (mods.equip) {
         mods.equip.forEach(async got=>{
-            setColor(tiles[got].color);
-            drawSprite(await loadSprite(tiles[got].sprite + "smol"), x, y);
+            setColor(got[2]);
+            drawSprite(await loadSprite(got[1]), x, y);
         });
     }
     
