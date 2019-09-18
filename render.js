@@ -62,21 +62,16 @@ function drawSprite(sprite, x, y, dir = 0, colored = true, overlay, mask, maskdi
     tctx.translate(tcanvas.width/2, tcanvas.height/2);
     tctx.rotate(dir);
     tctx.translate(-sprite.width/2, -sprite.height/2);
-    if (colored) {
-        tctx.globalCompositeOperation = "source-over"; // color
-        if (overlay) {
-            tctx.drawImage(overlay, 0, 0)
-        } else {
-            tctx.fillRect(0, 0, sprite.width, sprite.height);
-        }
-        tctx.globalCompositeOperation = "multiply"; // brightness
-        tctx.drawImage(sprite, 0, 0);
-        tctx.globalCompositeOperation = "destination-in"; // transparency
-        tctx.drawImage(sprite, 0, 0);
+    tctx.globalCompositeOperation = "source-over"; // color
+    if (colored && overlay) {
+        tctx.drawImage(overlay, 0, 0)
     } else {
-        tctx.globalCompositeOperation = "source-over"; // color
-        tctx.drawImage(sprite, 0, 0);
+        tctx.fillRect(0, 0, sprite.width, sprite.height);
     }
+    tctx.globalCompositeOperation = "multiply"; // brightness
+    tctx.drawImage(sprite, 0, 0);
+    tctx.globalCompositeOperation = "destination-in"; // transparency
+    tctx.drawImage(sprite, 0, 0);
     
     if (mask) {
         tctx.translate(sprite.width/2, sprite.height/2);
@@ -288,10 +283,10 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
     }
     
     if (mods.equip) {
-        mods.equip.forEach(async got=>{
-            setColor(got[1]);
-            drawSprite(await loadSprite(got[0]), x, y);
-        });
+        for (i in mods.equip) {
+            setColor(mods.equip[i][1]);
+            drawSprite(await loadSprite(mods.equip[i][0]), x, y);
+        }
     }
     
     if (mods.nt) {
