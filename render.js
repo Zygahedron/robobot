@@ -173,6 +173,13 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
             case "gate":
                 mods.gate = true;
                 break;
+            case "gunne":
+            case "hatt":
+            case "katany":
+            case "slippers":
+                mods.equip = mods.equip || [];
+                mods.equip.push(arg);
+                break;
             default:
                 if (arg in data.colors) {
                     mods.color = data.colors[arg];
@@ -213,7 +220,7 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
     
     if (poortoll && tile.portal) {
         ctx.globalCompositeOperation = "destination-out";
-        let mask = await loadSprite(tile.sprite+"_bg")
+        let mask = await loadSprite(tile.sprite+"_mask")
         ctx.translate(x*32+16, y*32+16);
         ctx.rotate(mods.dir);
         ctx.drawImage(mask, -mask.width/2, -mask.height/2);
@@ -269,6 +276,12 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
         
         setColor(color);
         drawSprite(sprite, x, y, mods.dir, colored[j], mods.overlay, mask, maskdir)
+    }
+    
+    if (mods.equip) {
+        mods.equip.forEach(got=>{
+            drawSprite(await loadSprite(got + "smol"), x, y);
+        });
     }
     
     if (mods.nt) {
