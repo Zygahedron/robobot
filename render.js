@@ -176,7 +176,6 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
             case "gunne":
             case "hatt":
             case "katany":
-            case "slippers":
                 mods.equip = mods.equip || [];
                 mods.equip.push(arg);
                 break;
@@ -280,6 +279,7 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
     
     if (mods.equip) {
         mods.equip.forEach(async got=>{
+            setColor(tiles[got].color);
             drawSprite(await loadSprite(got + "smol"), x, y);
         });
     }
