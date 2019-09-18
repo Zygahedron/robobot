@@ -175,19 +175,19 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
                 break;
             case "gunne":
                 mods.equip = mods.equip || [];
-                mods.equip.push(["gunnesmol", tiles.gunne.color]);
+                mods.equip.push(["gunnesmol", data.tiles.gunne.color]);
                 break;
             case "hatt":
                 mods.equip = mods.equip || [];
-                mods.equip.push(["hatsmol", tiles.hatt.color]);
+                mods.equip.push(["hatsmol", data.tiles.hatt.color]);
                 break;
             case "katany":
                 mods.equip = mods.equip || [];
-                mods.equip.push(["katanysmol", tiles.katany.color]);
+                mods.equip.push(["katanysmol", data.tiles.katany.color]);
                 break;
             case "knif":
                 mods.equip = mods.equip || [];
-                mods.equip.push(["knifsmol", tiles.knif.color]);
+                mods.equip.push(["knifsmol", data.tiles.knif.color]);
                 break;
             default:
                 if (arg in data.colors) {
