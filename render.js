@@ -279,7 +279,7 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
     }
     
     if (mods.equip) {
-        mods.equip.forEach(got=>{
+        mods.equip.forEach(async got=>{
             drawSprite(await loadSprite(got + "smol"), x, y);
         });
     }
