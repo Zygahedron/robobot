@@ -86,6 +86,9 @@ function drawSprite(sprite, x, y, dir = 0, colored = true, overlay, mask, maskdi
 }
 
 async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
+    name = name.replace(/\\/g,"");
+    name = name.replace(/🙂/g,":)");
+    name = name.replace(/⭕/g,":o:");
     if (name == "" || name == "text_" || name == "txt_" || name == "letter_") name += ":" + args.shift();
     if (name.startsWith("text_tile_")) name = name.substr(10);
     if (name.startsWith("text_til_")) name = name.substr(9);
