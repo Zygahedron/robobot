@@ -149,6 +149,10 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
             case "sleep":
                 mods.sleep = true;
                 break;
+            case "shy":
+            case "shy...":
+                mods.shy = true;
+                break;
             case "windows":
             case "windous":
                 mods.os = "windous";
@@ -253,6 +257,10 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
         sprites = [tile.sprite];
         colors = [tile.color];
         colored = [true];
+    }
+    
+    if (mods.shy && tile.name == "boooo") {
+        sprites = ["boooo_shy","boooo_mouth_shy","boooo_blush"];
     }
     
     for (let j = 0; j < sprites.length; j++) {
