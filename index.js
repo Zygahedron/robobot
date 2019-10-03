@@ -86,7 +86,7 @@ palatttes:
     }
 });
 
-setInterval(()=>{
+function updateBab() {
     exec("git pull origin master", {cwd: "../bab-be-u"}, (e, stdout, stderr) => {
         if (e) {
             console.error(e);
@@ -98,7 +98,8 @@ setInterval(()=>{
             message.reply("Updated.");
         }
     });
-}, 1000*60*60); //every hour
+}
+setInterval(updateBab, 1000*60*60); //every hour
 
 process.on('SIGINT', () => {
     console.log("Shutting down.");
