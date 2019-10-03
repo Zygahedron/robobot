@@ -84,20 +84,21 @@ palatttes:
             message.reply("An error occured while rendering:\n" + err);
         });
     }
-    if (message.content == "--updatebab") {
-        delete require.cache[require.resolve('./data.js')];
-        exec("git pull origin master", {cwd: "../bab-be-u"}, (e, stdout, stderr) => {
-            if (e) {
-                console.error(e);
-            } else if (stderr) {
-                console.error(stderr);
-            } else {
-                require("./data.js");
-                message.reply("Updated.");
-            }
-        });
-    }
 });
+
+setInterval(()=>{
+    exec("git pull origin master", {cwd: "../bab-be-u"}, (e, stdout, stderr) => {
+        if (e) {
+            console.error(e);
+        } else if (stderr) {
+            console.error(stderr);
+        } else if (stdout.indexOf("up to date") == -1) {
+            delete require.cache[require.resolve('./data.js')];
+            require("./data.js");
+            message.reply("Updated.");
+        }
+    });
+}, 1000*60*60); //every hour
 
 process.on('SIGINT', () => {
     console.log("Shutting down.");
