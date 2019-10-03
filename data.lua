@@ -9,9 +9,4 @@ function love.graphics.newQuad() return end
 
 json = require "robobot/lib/json"
 require "bab-be-u/values"
-for i,v in pairs(tiles_list) do
-  if not pcall(function(a, b) json.encode({a = b}) end, i, v) then
-    print(i)
-  end
-end
 print(json.encode({tiles_list = tiles_list, colors = main_palette_for_colour}))
