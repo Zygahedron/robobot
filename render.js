@@ -279,7 +279,7 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
         if ((tile.name == "lin" || tile.name == "lvl") && mods.hidden) {
             spritename += "_hidden";
         }
-        if (mods.sleep && tile.slep) {
+        if (mods.sleep && await loadSprite(spritename+"_slep") != wat_sprite) {
             spritename += "_slep";
         }
         
