@@ -139,7 +139,10 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
                 mods.overlay = arg;
                 break;
             case "meta":
-                mods.meta = 1;
+                mods.meta = (mods.meta || 0) + 1;
+                break;
+            case "meta_infinity":
+                mods.meta = Infinity;
                 break;
             case "nt":
             case "n't":
