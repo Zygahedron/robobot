@@ -142,6 +142,8 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
                 mods.meta = (mods.meta || 0) + 1;
                 break;
             case "meta_infinity":
+            case "metainfinity":
+            case "infinity":
                 mods.meta = Infinity;
                 break;
             case "nt":
@@ -199,7 +201,7 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
                     mods.color = data.colors[arg];
                 } else if (arg.match(/^[0-6],[0-4]$/)) {
                     mods.color = arg.split(",");
-                } else if (arg.match(/^meta_\d+$/)) {
+                } else if (arg.match(/^meta_?\d+$/)) {
                     mods.meta = (mods.meta || 0) + +arg.substr(5);
                 } else {
                     // throw error here
