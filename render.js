@@ -202,7 +202,7 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
                 } else if (arg.match(/^[0-6],[0-4]$/)) {
                     mods.color = arg.split(",");
                 } else if (arg.match(/^meta_?\d+$/)) {
-                    mods.meta = (mods.meta || 0) + +arg.substr(5);
+                    mods.meta = (mods.meta || 0) + +arg.replace(/meta_?/,"");
                 } else {
                     // throw error here
                 }
