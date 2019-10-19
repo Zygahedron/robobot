@@ -11,6 +11,8 @@ let ctx
 
 const data = require("./data.js");
 
+const ditto = require("./ditto.js");
+
 const palettes = {}
 const palette_dir = "../bab-be-u/assets/palettes/"
 fs.readdir(palette_dir, (err, files)=>{
@@ -207,6 +209,9 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
                     // throw error here
                 }
         }
+        if (name == "ditto" && ditto[arg]) {
+            mods.ditto = ditto[arg];
+        }
     });
     let poortoll = false;
     if (name.match(/^[^()]+\(.*\)$/)) { // foo(bar)
@@ -269,13 +274,11 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
     }
     
     for (let j = 0; j < sprites.length; j++) {
-        let spritename;
+        let spritename = sprites[j];
         if (mods.meta && tile.metasprite) {
             spritename = tile.metasprite // this won't work if there's multiple metasprites, but I don't think anything does that
         } else if (tile.name == "os" && mods.os) {
             spritename = "os_" + mods.os;
-        } else {
-            spritename = sprites[j]
         }
         if (tile.name == "lin" && mods.gate) {
             spritename += "_gate";
@@ -286,6 +289,9 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
         }
         if (mods.sleep && await loadSprite(spritename+"_slep") != wat_sprite) {
             spritename += "_slep";
+        }
+        if (tile.name == "ditto" && mods.ditto) {
+            spritename = "ditto_"+mods.ditto;
         }
         
         let sprite = await loadSprite(spritename);
