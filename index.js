@@ -26,7 +26,7 @@ bot.on("message", message=>{
 `\`\`\`
 bab be u
  til
-render tils (use text_bab for txt)
+render tils (use txt_bab for txt)
  rul
 render ruls (use tile_bab for bab)
  ping
