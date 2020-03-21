@@ -54,7 +54,7 @@ function setColor(color) {
     }
 }
 
-function drawSprite(sprite, x, y, dir = 0, colored = true, overlay, mask, maskdir = 0) {
+function drawSprite(sprite, x, y, dir = 0, painted = true, overlay, mask, maskdir = 0) {
     let color = tctx.fillStyle;
     tcanvas.width = sprite.width + sprite.height;
     tcanvas.height = sprite.width + sprite.height;
@@ -65,7 +65,7 @@ function drawSprite(sprite, x, y, dir = 0, colored = true, overlay, mask, maskdi
     tctx.rotate(dir);
     tctx.translate(-sprite.width/2, -sprite.height/2);
     tctx.globalCompositeOperation = "source-over"; // color
-    if (colored && overlay) {
+    if (painted && overlay) {
         tctx.drawImage(overlay, 0, 0)
     } else {
         tctx.fillRect(0, 0, sprite.width, sprite.height);
@@ -98,7 +98,7 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
     if (name.startsWith("txt_til_")) name = name.substr(8);
     if (name.startsWith("text_letter_")) name = name.substr(5);
     if (name.startsWith("txt_letter_")) name = name.substr(4);
-    let mods = {dir: 0};
+    let mods = {};
     args.forEach((arg, i)=>{
         switch (arg) {
             case "right":
@@ -219,9 +219,15 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
         name = match[1];
         poortoll = match[2];
     }
-    if (name == ")") mods.dir = (mods.dir || 0) + Math.PI;
+    if (mods.dir == undefined) {
+        if (name == "txt_)" || name == "text_)" || name == "letter_)") {
+            mods.dir = Math.PI;
+        } else {
+            mods.dir = 0;
+        }
+    }
     let tile = data.tiles[name];
-    while (!tile && name.startsWith("text_") && name != "text_this") {
+    while (!tile && name.startsWith("txt_") && name != "txt_this") {
         name = name.substr(5);
         tile = data.tiles[name];
         mods.meta = (mods.meta || 0) + 1;
@@ -231,7 +237,6 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
         mods.gate = true;
         tile = data.tiles[name];
     }
-    if (name == "text_this") name = "this";
     if (!tile) return;
     if (mods.nt && data.tiles[name+"n't"]) {
         mods.nt = false;
@@ -253,24 +258,23 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
             if (!stack[i]) continue;
             let args = stack[i].toLowerCase().split(":");
             let name = args.shift();
-            if (is_rul) name = "text_" + name;
+            if (is_rul) name = "txt_" + name;
             await drawTile(name, args, x, y, is_rul, mask, mods.dir);
         }
     }
     
-    let sprites, colors, colored;
-    if (Array.isArray(tile.sprite)) {
-        sprites = tile.sprite;
-        colors = tile.color;
-        colored = tile.colored;
-    } else {
-        sprites = [tile.sprite];
-        colors = [tile.color];
-        colored = [true];
-    }
+    let sprites = tile.sprite;
+    let colors = tile.color;
+    let painted = tile.painted || [true];
     
     if (mods.shy && tile.name == "boooo") {
         sprites = ["boooo_shy","boooo_mouth_shy","boooo_blush"];
+    }
+
+    if (tile.name == "therealbabdictator") {
+        sprites = ["miku_shirt", "miku_skin", "miku_black", "miku_blue", "miku_red"];
+        colors = [[0, 2], [0, 3], [0, 1], [1, 4], [2, 2]];
+        painted = [false, false, false, true, false];
     }
     
     for (let j = 0; j < sprites.length; j++) {
@@ -296,12 +300,12 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
         
         let sprite = await loadSprite(spritename);
         let color;
-        if (colored[j]) color = mods.color || colors[j];
+        if (painted[j]) color = mods.color || colors[j];
         else color = colors[j];
         if (mods.overlay) mods.overlay = await loadSprite("overlay/"+mods.overlay);
         
         setColor(color);
-        drawSprite(sprite, x, y, mods.dir, colored[j], mods.overlay, mask, maskdir)
+        drawSprite(sprite, x, y, mods.dir, painted[j], mods.overlay, mask, maskdir)
     }
     
     if (mods.equip) {
@@ -347,7 +351,7 @@ async function render(map, is_rul) {
                 if (!stack[i]) continue;
                 let args = stack[i].toLowerCase().split(/\:(?!(?:[^()]|\:[()])*\))/); // ":" not in parentheses
                 let name = args.shift();
-                if (is_rul) name = "text_" + name;
+                if (is_rul) name = "txt_" + name;
                 await drawTile(name, args, x, y, is_rul);
             }
         }
