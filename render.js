@@ -54,16 +54,19 @@ function setColor(color) {
     }
 }
 
-function drawSprite(sprite, x, y, dir = 0, painted = true, overlay, mask, maskdir = 0) {
+function drawSprite(sprite, x, y, dir = 0, painted = true, overlay, mask, maskdir = 0, offset_x = 0, offset_y = 0, width, height) {
+    width = width || sprite.width;
+    height = height || sprite.height;
+
     let color = tctx.fillStyle;
-    tcanvas.width = sprite.width + sprite.height;
-    tcanvas.height = sprite.width + sprite.height;
+    tcanvas.width = width + height;
+    tcanvas.height = width + height;
     tctx.fillStyle = color;
     tctx.imageSmoothingEnabled = false
     
     tctx.translate(tcanvas.width/2, tcanvas.height/2);
     tctx.rotate(dir);
-    tctx.translate(-sprite.width/2, -sprite.height/2);
+    tctx.translate(-width/2 + offset_x, -height/2 + offset_y);
     tctx.globalCompositeOperation = "source-over"; // color
     if (painted && overlay) {
         tctx.drawImage(overlay, 0, 0)
@@ -76,7 +79,7 @@ function drawSprite(sprite, x, y, dir = 0, painted = true, overlay, mask, maskdi
     tctx.drawImage(sprite, 0, 0);
     
     if (mask) {
-        tctx.translate(sprite.width/2, sprite.height/2);
+        tctx.translate(-offset_x + width/2, -offset_y + height/2);
         tctx.rotate(maskdir-dir);
         tctx.translate(-mask.width/2, -mask.height/2);
         tctx.globalCompositeOperation = "destination-in"; // transparency
@@ -133,11 +136,21 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
             case "ur":
                 mods.dir = Math.PI*7/4;
                 break;
+            case "trans":
             case "tranz":
                 mods.overlay = "trans"; // why is this different
                 break;
+            case "lesbian":
+            case "lesbab":
+                mods.overlay = "lesbian"; // i dont know tbh
+                break;
             case "gay":
             case "enby":
+            case "ace":
+            case "aro":
+            case "fluid":
+            case "bi":
+            case "pan":
                 mods.overlay = arg;
                 break;
             case "meta":
@@ -182,21 +195,11 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
             case "gate":
                 mods.gate = true;
                 break;
-            case "gunne":
-                mods.equip = mods.equip || [];
-                mods.equip.push(["gunnesmol", data.tiles.gunne.color]);
+            case "bowie":
+                mods.bowie = true;
                 break;
-            case "hatt":
-                mods.equip = mods.equip || [];
-                mods.equip.push(["hatsmol", data.tiles.hatt.color]);
-                break;
-            case "katany":
-                mods.equip = mods.equip || [];
-                mods.equip.push(["katanysmol", data.tiles.katany.color]);
-                break;
-            case "knif":
-                mods.equip = mods.equip || [];
-                mods.equip.push(["knifsmol", data.tiles.knif.color]);
+            case "sans":
+                mods.sans = true;
                 break;
             default:
                 if (arg in data.colors) {
@@ -205,6 +208,9 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
                     mods.color = arg.split(",");
                 } else if (arg.match(/^meta_?\d+$/)) {
                     mods.meta = (mods.meta || 0) + +arg.replace(/meta_?/,"");
+                } else if (arg in data.features) {
+                    mods.equip = mods.equip || [];
+                    mods.equip.push(arg);
                 } else {
                     // throw error here
                 }
@@ -228,7 +234,7 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
     }
     let tile = data.tiles[name];
     while (!tile && name.startsWith("txt_") && name != "txt_this") {
-        name = name.substr(5);
+        name = name.substr(4);
         tile = data.tiles[name];
         mods.meta = (mods.meta || 0) + 1;
     }
@@ -266,15 +272,19 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
     let sprites = tile.sprite;
     let colors = tile.color;
     let painted = tile.painted || [true];
+
+    if (mods.bowie) {
+        let feature_x, feature_y = 0;
+        if (tile.features && tile.features["bowie"]) {
+            feature_x = tile.features["bowie"].x || 0;
+            feature_y = tile.features["bowie"].y || 0;
+        }
+        setColor([2,2]);
+        drawSprite(await loadSprite("bowie_smol"), x, y, mods.dir, false, null, mask, maskdir, feature_x, feature_y, 32, 32);
+    }
     
     if (mods.shy && tile.name == "boooo") {
         sprites = ["boooo_shy","boooo_mouth_shy","boooo_blush"];
-    }
-
-    if (tile.name == "therealbabdictator") {
-        sprites = ["miku_shirt", "miku_skin", "miku_black", "miku_blue", "miku_red"];
-        colors = [[0, 2], [0, 3], [0, 1], [1, 4], [2, 2]];
-        painted = [false, false, false, true, false];
     }
     
     for (let j = 0; j < sprites.length; j++) {
@@ -283,6 +293,16 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
             spritename = tile.metasprite // this won't work if there's multiple metasprites, but I don't think anything does that
         } else if (tile.name == "os" && mods.os) {
             spritename = "os_" + mods.os;
+        }
+        if (spritename == "txt/themself") {
+            if (name.startsWith("txt_her") || name.startsWith("text_her")) spritename = "txt/herself";
+            if (name.startsWith("txt_it") || name.startsWith("text_it")) spritename = "txt/itself";
+            if (name.startsWith("txt_xem") || name.startsWith("text_xem")) spritename = "txt/xemself";
+            if (name.startsWith("txt_him") || name.startsWith("text_him")) spritename = "txt/himself";
+            if (name.startsWith("txt_hir") || name.startsWith("text_hir")) spritename = "txt/hirself";
+        }
+        if (spritename == "txt/themself_lower" && name.endsWith("selves")) {
+            spritename = "txt/themselves_lower";
         }
         if (tile.name == "lin" && mods.gate) {
             spritename += "_gate";
@@ -310,9 +330,38 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
     
     if (mods.equip) {
         for (i in mods.equip) {
-            setColor(mods.equip[i][1]);
-            drawSprite(await loadSprite(mods.equip[i][0]), x, y);
+            let feature = data.features[mods.equip[i]];
+            let feature_x = feature.offset[0]*32;
+            let feature_y = feature.offset[1]*32;
+            if (tile.features && tile.features[mods.equip[i]]) {
+                feature_x += tile.features[mods.equip[i]].x || 0;
+                feature_y += tile.features[mods.equip[i]].y || 0;
+            }
+            for (let i = 0; i < feature.sprite.length; i++) {
+                let sprite = await loadSprite(feature.sprite[i]);
+                if (feature.painted[i]) {
+                    setColor(mods.color || colors[0]);
+                } else {
+                    setColor(feature.color[i]);
+                }
+                drawSprite(sprite, x, y, mods.dir, false, null, mask, maskdir, feature_x, feature_y, 32, 32);
+            }
         }
+    }
+
+    if (mods.sans && !mods.sleep && tile.features && tile.features["sans"]) {
+        ctx.save();
+        ctx.translate(x*32+16, y*32+16);
+        ctx.rotate(mods.dir);
+        ctx.translate(-16, -16);
+    
+        ctx.fillStyle = palettes[palette][1][4];
+        ctx.fillRect(tile.features["sans"].x, tile.features["sans"].y, tile.features["sans"].w, tile.features["sans"].h);
+        for (let i = 1; i < tile.features["sans"].w; i++) {
+            ctx.fillRect(tile.features["sans"].x + i, tile.features["sans"].y - i, tile.features["sans"].w - i, 1);
+        }
+    
+        ctx.restore();
     }
     
     if (mods.nt) {
@@ -333,9 +382,23 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
 
 async function render(map, is_rul) {
     palette = "default";
-    if (map[0][0].startsWith("palette=")) {
-        palette = map[0].shift().substr("palette=".length);
-        if (!palettes[palette]) palette = "default";
+    let bg = false;
+    let check_args = true;
+    while (check_args) {
+        if (map[0][0].startsWith("palette=")) {
+            palette = map[0].shift().substr("palette=".length);
+            if (!palettes[palette]) palette = "default";
+        } else if (map[0][0].startsWith("background=")) {
+            bg = map[0].shift() == "background=true";
+        } else if (map[0][0] == "-b" || map[0][0] == "-bg") {
+            map[0].shift();
+            bg = true;
+        } else {
+            check_args = false;
+        }
+        if (map[0][0] == undefined) {
+            throw "No tiles specified"; 
+        }
     }
     let width = map.reduce((a,b)=>Math.max(a,b.length),0);
     let height = map.length;
@@ -349,7 +412,7 @@ async function render(map, is_rul) {
             let stack = map[y][x].split(/\+(?!(?:[^()]|\:[()])*\))/); // "+" not in parentheses
             for (let i = 0; i < stack.length; i++) {
                 if (!stack[i]) continue;
-                let args = stack[i].toLowerCase().split(/\:(?!(?:[^()]|\:[()])*\))/); // ":" not in parentheses
+                let args = stack[i].split(/\:(?!(?:[^()]|\:[()])*\))/); // ":" not in parentheses
                 let name = args.shift();
                 if (is_rul) name = "txt_" + name;
                 await drawTile(name, args, x, y, is_rul);
@@ -357,7 +420,18 @@ async function render(map, is_rul) {
         }
     }
     
-    return canvas.createPNGStream();
+    if (bg) {
+        // just making another canvas here bc portal effects cut into the bg otherwise
+        let bg_canvas = new Canvas(32*width + 16, 32*height + 16);
+        let bg_ctx = bg_canvas.getContext('2d');
+        bg_ctx.imageSmoothingEnabled = false
+        bg_ctx.fillStyle = palettes[palette][0][4];
+        bg_ctx.fillRect(0, 0, bg_canvas.width, bg_canvas.height);
+        bg_ctx.drawImage(canvas, 0, 0);
+        return bg_canvas.createPNGStream();
+    } else {
+        return canvas.createPNGStream();
+    }
 }
 
 module.exports = render;
