@@ -4,6 +4,7 @@ const fs = require('fs');
 const data = require("./data-base");
 
 data.tiles = {};
+data.tiles_list = []; // tile array for searching
 
 // this looks awful but idk javascript so
 function loadDirectory(dir) {
@@ -43,9 +44,11 @@ aliases["txt_loop"] = ["txt_infloop"];
 aliases["loop"] = ["infloop"];
 aliases["txt_nt"] = ["txt_n't"];
 aliases["this"] = ["txt_this"];
+aliases["txt_themself"] = ["txt_herself", "txt_itself", "txt_xemself", "txt_himself", "txt_hirself", "txt_themselves"];
 
 function loadTiles(tiles_list) {
     tiles_list.forEach((tile, i) => {
+        data.tiles_list.push(tile);
         let names = [tile.name.toLowerCase()];
         if (tile.name.match(" ")) {
             console.log("Found space in: "+tile.name);
@@ -54,7 +57,7 @@ function loadTiles(tiles_list) {
         }
         names.forEach(name=>{
             data.tiles[name] = tile;
-            if (name.startsWith("letter_") && name != "letter_o" && name != "letter_u" && name != "letter_go") {
+            if (name.startsWith("letter_") && !data.tiles[name.replace("letter_","txt_")]) {
                 data.tiles[name.replace("letter_","text_")] = tile;
                 data.tiles[name.replace("letter_","txt_")] = tile;
             }

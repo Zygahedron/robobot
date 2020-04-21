@@ -28,7 +28,7 @@ bab be u
  til
 render tils (use txt_bab for txt)
  rul
-render ruls (use tile_bab for bab)
+render ruls (use til_bab for bab)
  ping
 pong
  help
@@ -40,6 +40,8 @@ how 2 use args:
 :left, :gay, :slep, etc (and they stack)
 palatttes:
 -til palette=marshmallow keek
+baccgroun:
+-rul -bg bab be u
 \`\`\``
         );
     }
@@ -67,7 +69,7 @@ palatttes:
         }
     }
     if (message.content.startsWith("-til ")) {
-        let map = message.content.substr(5).split("\n").map(row=>row.split(" "));
+        let map = message.content.substr(5).toLowerCase().split("\n").map(row=>row.split(" "));
         render(map).then(img=>{
             message.reply("", {file: new Discord.Attachment(img, "render.png")});
         }, err=>{
@@ -76,7 +78,7 @@ palatttes:
         });
     }
     if (message.content.startsWith("-rul ")) {
-        let map = message.content.substr(5).split("\n").map(row=>row.split(" "));
+        let map = message.content.substr(5).toLowerCase().split("\n").map(row=>row.split(" "));
         render(map, true).then(img=>{
             message.reply("", {file: new Discord.Attachment(img, "render.png")});
         }, err=>{
