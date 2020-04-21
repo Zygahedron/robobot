@@ -13,6 +13,7 @@
     "discord.js": "^11.5.1",
     "dotenv": "^6.2.0",
     "fs": "0.0.1-security",
-    "fuzzy-search": "^3.0.1"
+    "fuzzy-search": "^3.0.1",
+    "gif-encoder": "^0.7.2"
   }
 }

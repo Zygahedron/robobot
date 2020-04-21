@@ -1,4 +1,4 @@
-let data = {}
+let data = {};
 
 data.colors = {
   "black":  [0, 4],
@@ -94,7 +94,7 @@ data.features = {
     "painted": [false],
     "offset": [0, 0]
   }
-}
+};
 
 
 module.exports = data;

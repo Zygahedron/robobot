@@ -45,6 +45,8 @@ aliases["loop"] = ["infloop"];
 aliases["txt_nt"] = ["txt_n't"];
 aliases["this"] = ["txt_this"];
 aliases["txt_themself"] = ["txt_herself", "txt_itself", "txt_xemself", "txt_himself", "txt_hirself", "txt_themselves"];
+aliases["txt_wont"] = ["txt_won't"];
+aliases["txt_wontn't"] = ["txt_wo"];
 
 function loadTiles(tiles_list) {
     tiles_list.forEach((tile, i) => {
