@@ -70,8 +70,8 @@ baccgroun:
     }
     if (message.content.startsWith("-til ")) {
         let map = message.content.substr(5).toLowerCase().split("\n").map(row=>row.split(" "));
-        render(map).then(img=>{
-            message.reply("", {file: new Discord.Attachment(img, "render.png")});
+        render(map).then(result=>{
+            message.reply("", {file: new Discord.Attachment(result.stream, "render."+result.type)});
         }, err=>{
             console.error(err);
             message.reply("An error occured while rendering:\n" + err);
@@ -79,8 +79,8 @@ baccgroun:
     }
     if (message.content.startsWith("-rul ")) {
         let map = message.content.substr(5).toLowerCase().split("\n").map(row=>row.split(" "));
-        render(map, true).then(img=>{
-            message.reply("", {file: new Discord.Attachment(img, "render.png")});
+        render(map, true).then(result=>{
+            message.reply("", {file: new Discord.Attachment(result.stream, "render."+result.type)});
         }, err=>{
             console.error(err);
             message.reply("An error occured while rendering:\n" + err);

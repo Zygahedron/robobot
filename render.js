@@ -1,4 +1,5 @@
 const {Canvas, loadImage} = require("canvas");
+const GifEncoder = require ('gif-encoder');
 const fs = require('fs');
 const sprites_dir = "../bab-be-u/assets/sprites/";
 const sprites_cache = [];
@@ -7,7 +8,7 @@ loadImage(sprites_dir+"wat.png").then(s => wat_sprite = s);
 
 let tcanvas = new Canvas(32, 32);
 let tctx = tcanvas.getContext('2d');
-let ctx
+let ctx, gif;
 
 const data = require("./data.js");
 
@@ -41,6 +42,49 @@ async function loadSprite(sprite) {
     } catch (e) {
         return wat_sprite;
     }
+}
+
+function simplifyName(name, args) {
+    name = name.replace(/\\/g,"");
+    name = name.replace(/🙂/g,":)");
+    name = name.replace(/⭕/g,":o:");
+    if (name == "" || name == "text_" || name == "txt_" || name == "letter_") name += ":" + args.shift();
+    if (name.startsWith("text_tile_")) name = name.substr(10);
+    if (name.startsWith("text_til_")) name = name.substr(9);
+    if (name.startsWith("txt_tile_")) name = name.substr(9);
+    if (name.startsWith("txt_til_")) name = name.substr(8);
+    if (name.startsWith("text_letter_")) name = name.substr(5);
+    if (name.startsWith("txt_letter_")) name = name.substr(4);
+
+    let nt = false;
+    let meta = 0;
+    let poortoll = false;
+
+    if (name.match(/^[^()]+\(.*\)$/)) { // foo(bar)
+        let match = name.match(/^([^()]+)\((.*)\)$/);
+        name = match[1];
+        poortoll = match[2];
+    }
+
+    let tile = data.tiles[name];
+    while (!tile) {
+        if (name.endsWith("n't") && data.tiles[name.substr(0, name.length-3)]) {
+            name = name.substr(0, name.length-3);
+            tile = data.tiles[name];
+            nt = !nt;
+            continue;
+        }
+        if (name.startsWith("txt_") && name != "txt_this") {
+            name = name.substr(4);
+            tile = data.tiles[name];
+            meta += 1;
+            continue;
+        }
+        break;
+    }
+    if(!tile) return;
+
+    return {"name": name, "nt": nt, "meta": meta, "poortoll": poortoll};
 }
 
 function setColor(color) {
@@ -90,17 +134,7 @@ function drawSprite(sprite, x, y, dir = 0, painted = true, overlay, mask, maskdi
     ctx.drawImage(tcanvas, x*32+16-tcanvas.width/2, y*32+16-tcanvas.height/2);
 }
 
-async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
-    name = name.replace(/\\/g,"");
-    name = name.replace(/🙂/g,":)");
-    name = name.replace(/⭕/g,":o:");
-    if (name == "" || name == "text_" || name == "txt_" || name == "letter_") name += ":" + args.shift();
-    if (name.startsWith("text_tile_")) name = name.substr(10);
-    if (name.startsWith("text_til_")) name = name.substr(9);
-    if (name.startsWith("txt_tile_")) name = name.substr(9);
-    if (name.startsWith("txt_til_")) name = name.substr(8);
-    if (name.startsWith("text_letter_")) name = name.substr(5);
-    if (name.startsWith("txt_letter_")) name = name.substr(4);
+async function drawTile(name, meta, nt, poortoll, args, x, y, is_rul, frame, mask, maskdir) {
     let mods = {};
     args.forEach((arg, i)=>{
         switch (arg) {
@@ -154,16 +188,16 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
                 mods.overlay = arg;
                 break;
             case "meta":
-                mods.meta = (mods.meta || 0) + 1;
+                meta = meta + 1;
                 break;
             case "meta_infinity":
             case "metainfinity":
             case "infinity":
-                mods.meta = Infinity;
+                meta = Infinity;
                 break;
             case "nt":
             case "n't":
-                mods.nt = true;
+                nt = !nt;
                 break;
             case "slep":
             case "sleep":
@@ -207,7 +241,7 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
                 } else if (arg.match(/^[0-6],[0-4]$/)) {
                     mods.color = arg.split(",");
                 } else if (arg.match(/^meta_?\d+$/)) {
-                    mods.meta = (mods.meta || 0) + +arg.replace(/meta_?/,"");
+                    meta = meta + Number(arg.replace(/meta_?/,""));
                 } else if (arg in data.features) {
                     mods.equip = mods.equip || [];
                     mods.equip.push(arg);
@@ -219,12 +253,6 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
             mods.ditto = ditto[arg];
         }
     });
-    let poortoll = false;
-    if (name.match(/^[^()]+\(.*\)$/)) { // foo(bar)
-        let match = name.match(/^([^()]+)\((.*)\)$/);
-        name = match[1];
-        poortoll = match[2];
-    }
     if (mods.dir == undefined) {
         if (name == "txt_)" || name == "text_)" || name == "letter_)") {
             mods.dir = Math.PI;
@@ -233,21 +261,23 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
         }
     }
     let tile = data.tiles[name];
-    while (!tile && name.startsWith("txt_") && name != "txt_this") {
-        name = name.substr(4);
-        tile = data.tiles[name];
-        mods.meta = (mods.meta || 0) + 1;
-    }
     if (name == "gate") {
         name = "lin";
         mods.gate = true;
         tile = data.tiles[name];
     }
     if (!tile) return;
-    if (mods.nt && data.tiles[name+"n't"]) {
-        mods.nt = false;
-        name += "n't";
+    if (nt && data.tiles[name+"n't"]) {
+        nt = false;
+        name = name + "n't";
         tile = data.tiles[name];
+    } else if (nt && name.endsWith("n't") && data.tiles[name.substr(0,name.length-3)]) {
+        nt = false;
+        name = name.substr(0,name.length-3);
+        tile = data.tiles[name];
+    }
+    if (tile.wobble) {
+        gif = true;
     }
     
     if (poortoll && tile.portal) {
@@ -265,7 +295,10 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
             let args = stack[i].toLowerCase().split(":");
             let name = args.shift();
             if (is_rul) name = "txt_" + name;
-            await drawTile(name, args, x, y, is_rul, mask, mods.dir);
+            let info = simplifyName(name, args);
+            if (info) {
+                await drawTile(info.name, info.meta, info.nt, info.poortoll, args, x, y, is_rul, frame+i, mask, mods.dir);
+            }
         }
     }
     
@@ -289,7 +322,7 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
     
     for (let j = 0; j < sprites.length; j++) {
         let spritename = sprites[j];
-        if (mods.meta && tile.metasprite) {
+        if (meta > 0 && tile.metasprite) {
             spritename = tile.metasprite // this won't work if there's multiple metasprites, but I don't think anything does that
         } else if (tile.name == "os" && mods.os) {
             spritename = "os_" + mods.os;
@@ -316,6 +349,13 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
         }
         if (tile.name == "ditto" && mods.ditto) {
             spritename = "ditto_"+mods.ditto;
+        }
+        if (tile.wobble) {
+            let suffix = ((frame%3)+1);
+            if (mods.sleep && await loadSprite(spritename+"_slep_"+suffix) != wat_sprite) {
+                spritename += "_slep";
+            }
+            spritename += "_"+suffix;
         }
         
         let sprite = await loadSprite(spritename);
@@ -364,18 +404,18 @@ async function drawTile(name, args, x, y, is_rul, mask, maskdir) {
         ctx.restore();
     }
     
-    if (mods.nt) {
+    if (nt) {
         setColor([2,2]);
         drawSprite(await loadSprite("n't"), x, y);
     }
-    if (mods.meta) {
+    if (meta > 0) {
         setColor([4,1]);
-        drawSprite(await loadSprite("meta" + (mods.meta == 2 ? 2 : 1)), x, y)
+        drawSprite(await loadSprite("meta" + (meta == 2 ? 2 : 1)), x, y)
         
-        if (mods.meta > 2) {
+        if (meta > 2) {
             ctx.fillStyle = tctx.fillStyle;
             ctx.font = "10px Arial";
-            ctx.fillText(""+mods.meta, x*32 + 28, y*32 + 34);
+            ctx.fillText(meta, x*32 + 28, y*32 + 34);
         }
     }
 }
@@ -406,31 +446,67 @@ async function render(map, is_rul) {
     ctx = canvas.getContext('2d');
     ctx.translate(8, 8);
     ctx.imageSmoothingEnabled = false
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            if (!map[y][x]) continue;
-            let stack = map[y][x].split(/\+(?!(?:[^()]|\:[()])*\))/); // "+" not in parentheses
-            for (let i = 0; i < stack.length; i++) {
-                if (!stack[i]) continue;
-                let args = stack[i].split(/\:(?!(?:[^()]|\:[()])*\))/); // ":" not in parentheses
-                let name = args.shift();
-                if (is_rul) name = "txt_" + name;
-                await drawTile(name, args, x, y, is_rul);
+
+    // just making another canvas here bc portal effects cut into the bg otherwise
+    let bg_canvas = new Canvas(canvas.width, canvas.height);
+    let bg_ctx = bg_canvas.getContext('2d');
+    bg_ctx.imageSmoothingEnabled = false
+
+    gif = false;
+    let encoder = new GifEncoder(canvas.width, canvas.height);
+    encoder.setRepeat(0);
+    encoder.setDelay(180);
+    encoder.setQuality(10);
+    if (!bg) {
+        // arbitrary transparent color hopefullly nothing uses this
+        encoder.setTransparent(0xFF0BFF);
+    }
+
+    for (let frame = 0; frame < 3; frame++) {
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                if (!map[y][x]) continue;
+                let stack = map[y][x].split(/\+(?!(?:[^()]|\:[()])*\))/); // "+" not in parentheses
+                for (let i = 0; i < stack.length; i++) {
+                    if (!stack[i]) continue;
+                    let wobble_frame = (y * height) + x + i + frame;
+                    let args = stack[i].split(/\:(?!(?:[^()]|\:[()])*\))/); // ":" not in parentheses
+                    let name = args.shift();
+                    if (is_rul) name = "txt_" + name;
+                    let info = simplifyName(name, args);
+                    if (info) {
+                        await drawTile(info.name, info.meta, info.nt, info.poortoll, args, x, y, is_rul, wobble_frame);
+                    }
+                }
             }
         }
+        if (!gif) break;
+        
+        if (frame == 0) {
+            encoder.writeHeader();
+        }
+
+        if (bg) {
+            bg_ctx.fillStyle = palettes[palette][0][4];
+        } else {
+            bg_ctx.fillStyle = "#FF0BFF";
+        }
+        bg_ctx.fillRect(0, 0, bg_canvas.width, bg_canvas.height);
+        bg_ctx.drawImage(canvas, 0, 0);
+        encoder.addFrame(bg_ctx.getImageData(0, 0, bg_canvas.width, bg_canvas.height).data);
+        ctx.clearRect(-8, -8, canvas.width, canvas.height);
     }
     
-    if (bg) {
-        // just making another canvas here bc portal effects cut into the bg otherwise
-        let bg_canvas = new Canvas(32*width + 16, 32*height + 16);
-        let bg_ctx = bg_canvas.getContext('2d');
-        bg_ctx.imageSmoothingEnabled = false
+    if (gif) {
+        encoder.finish();
+        return {"stream": encoder, "type": "gif"};
+    } else if (bg) {
         bg_ctx.fillStyle = palettes[palette][0][4];
         bg_ctx.fillRect(0, 0, bg_canvas.width, bg_canvas.height);
         bg_ctx.drawImage(canvas, 0, 0);
-        return bg_canvas.createPNGStream();
+        return {"stream": bg_canvas.createPNGStream(), "type": "png"};
     } else {
-        return canvas.createPNGStream();
+        return {"stream": canvas.createPNGStream(), "type": "png"};
     }
 }
 
