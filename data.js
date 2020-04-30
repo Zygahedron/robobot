@@ -5,6 +5,7 @@ const data = require("./data-base");
 
 data.tiles = {};
 data.tiles_list = []; // tile array for searching
+data.overlays = {}; // pride flags and stuff
 
 // this looks awful but idk javascript so
 function loadDirectory(dir) {
@@ -65,6 +66,10 @@ function loadTiles(tiles_list) {
             }
             if (name.startsWith("txt_")) {
                 data.tiles[name.replace("txt_","text_")] = tile;
+                if (tile.overlay) {
+                    data.overlays[name.substr(4)] = tile.overlay.sprite;
+                    data.overlays[tile.overlay.sprite] = tile.overlay.sprite;
+                }
             }
             if (name in aliases) {
                 aliases[name].forEach(alias=>{
