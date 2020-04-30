@@ -170,23 +170,6 @@ async function drawTile(name, meta, nt, poortoll, args, x, y, is_rul, frame, mas
             case "ur":
                 mods.dir = Math.PI*7/4;
                 break;
-            case "trans":
-            case "tranz":
-                mods.overlay = "trans"; // why is this different
-                break;
-            case "lesbian":
-            case "lesbab":
-                mods.overlay = "lesbian"; // i dont know tbh
-                break;
-            case "gay":
-            case "enby":
-            case "ace":
-            case "aro":
-            case "fluid":
-            case "bi":
-            case "pan":
-                mods.overlay = arg;
-                break;
             case "meta":
                 meta = meta + 1;
                 break;
@@ -245,6 +228,8 @@ async function drawTile(name, meta, nt, poortoll, args, x, y, is_rul, frame, mas
                 } else if (arg in data.features) {
                     mods.equip = mods.equip || [];
                     mods.equip.push(arg);
+                } else if (arg in data.overlays) {
+                    mods.overlay = data.overlays[arg];
                 } else {
                     // throw error here
                 }
